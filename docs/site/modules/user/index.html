@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👤 Módulo de Usuarios - Guía de Historias de Usuario</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: #eef1fb;
+            color: #1f2a44;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+        .header {
+            background: linear-gradient(135deg, #5c6ac4, #7c4dff);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(44, 53, 114, 0.2);
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .header p {
+            margin: 0.25rem 0;
+            font-size: 1.1rem;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+        }
+        .section h2 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: #4b5ec3;
+            border-bottom: 3px solid #4b5ec3;
+            padding-bottom: 0.25rem;
+        }
+        .section ul {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+        .card {
+            border: 1px solid #e0e5ff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            background: #fdfdfd;
+        }
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: #2d3ad0;
+        }
+        .card p {
+            margin: 0.25rem 0;
+            font-size: 0.95rem;
+        }
+        .key-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        .key-table th,
+        .key-table td {
+            padding: 0.75rem;
+            border: 1px solid #d7dfee;
+            text-align: left;
+        }
+        .key-table th {
+            background: #eff2ff;
+            font-weight: 600;
+        }
+        .badge {
+            display: inline-flex;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+            background: #7c4dff;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #6b6f7c;
+        }
+        footer a {
+            color: #4b5ec3;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>👤 Módulo de Usuarios</h1>
+            <p>Guía táctica para escribir historias que describen la administración de usuarios del sistema.</p>
+            <p><strong>Propósito:</strong> reproducir los flujos originales del programa COBOL (COUSR00C-COUSR03C) en la UI moderna, manteniendo los atajos de teclado, validaciones y roles definidos en <code>UserService</code> y <code>UserApiAdapter</code>.</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Resumen del módulo</h2>
+            <p>El módulo cubre las cuatro etapas de la gestión de usuarios: listado con selección (actualizar/borrar), alta, actualización y baja. Se integra con <code>useApi</code>, <code>useUserList</code> y <code>UserApiAdapter</code> para alternar entre mocks (<code>VITE_USE_MOCKS</code>) y backend real.</p>
+            <ul>
+                <li><strong>Listar y seleccionar:</strong> <code>UserListScreen.tsx</code> renderiza una tabla con chips e íconos (Admin vs User) y usa <code>normalizeUserType</code> de <code>app/types/user.ts</code> para mapear cómo se almacenan los tipos.</li>
+                <li><strong>Alta</strong>, <strong>actualización</strong> y <strong>baja</strong>: cada pantalla reutiliza <code>SystemHeader</code> con los identificadores de transacción <code>CU01</code> (COUSR01C), <code>CU02</code> (COUSR02C) y <code>CU03</code> (COUSR03C), lo que ayuda a relacionar el comportamiento con el legado.</li>
+                <li><strong>Seguridad</strong>: <code>UserAddPage.tsx</code> valida que el usuario sea administrador antes de renderizar el formulario (usa <code>selectCurrentUser</code> y <code>selectIsAuthenticated</code>).</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🚦 Flujos y pantallas clave</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Listado y selección</h3>
+                    <p>Tabla con paginación (10 filas) y selección mediante <code>&lt;Select&gt;</code> que acepta <code>U</code> o <code>D</code>.</p>
+                    <p><strong>Key points:</strong> <code>handleEnterKey</code> ejecuta búsqueda si no hay selección o navega a la ruta de actualización/baja cuando hay una acción válida.</p>
+                    <p>Las teclas F3/F7/F8/F12 replican los atajos del mainframe (<code>useUserList.ts</code>), y <code>navigate</code> apunta a <code>/admin/users/update</code> o <code>/admin/users/delete</code>.</p>
+                </div>
+                <div class="card">
+                    <h3>Alta de usuarios</h3>
+                    <p>Formulario con campos: nombre, apellido, userId (max 8), contraseña (visible/oculta) y tipo (Admin/User).</p>
+                    <p><strong>F3</strong> regresa al menú admin, <strong>F4</strong> limpia (<code>clearForm</code>), <strong>ENTER</strong> envía (<code>handleSubmit</code>) y <strong>F12</strong> sale del sistema.</p>
+                    <p>Validaciones estrictas en <code>useUserAdd.ts</code> (nombres obligatorios, userId <=8, password <=8, tipo en {A,U}).</p>
+                </div>
+                <div class="card">
+                    <h3>Actualización</h3>
+                    <p>Busca por <code>userId</code>, carga los datos existentes y habilita campos para editar.</p>
+                    <p><strong>F3</strong> guarda y sale, <strong>F5</strong> guarda sin salir, <strong>F4</strong> limpia y <strong>F12/Escape</strong> cancela. Solo se permite <code>Save</code> si hay cambios detectados por <code>hasChanges()</code>.</p>
+                    <p><code>useUserUpdate.ts</code> exige contraseña de 8 caracteres, no permite duplicar datos y reusa <code>UserApiAdapter.getUserById</code> y <code>updateUser</code>.</p>
+                </div>
+                <div class="card">
+                    <h3>Baja</h3>
+                    <p>El formulario recupera la información de <code>userId</code> y deshabilita los campos, mostrando un diálogo de confirmación antes de eliminar.</p>
+                    <p><strong>F5</strong> abre el diálogo, <strong>F4</strong> limpia, <strong>ENTER</strong> busca y <strong>F3/F12</strong> regresan al listado.</p>
+                    <p><code>useUserDelete.ts</code> usa <code>UserApiAdapter.deleteUser</code> y no permite borrar sin haber cargado previamente el usuario.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🎯 Historias de usuario y reglas</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Selección rápida</h3>
+                    <p>Como administrador, quiero ingresar un <code>userId</code> en la grilla, pulsar ENTER y que el sistema navegue directamente a la actualización o eliminación según la acción del <code>Select</code>.</p>
+                </div>
+                <div class="card">
+                    <h3>Alta segura</h3>
+                    <p>Como administrador, quiero crear un usuario con ID de máximo 8 caracteres, contraseña de 8 caracteres y rol determinado, validando esa información antes de llamar a <code>UserApiAdapter.createUser</code>.</p>
+                </div>
+                <div class="card">
+                    <h3>Actualizar con control</h3>
+                    <p>Como administrador, quiero buscar un usuario existente, hacer cambios en nombre, apellido, tipo o contraseña y guardar solo si detecto diferencias para evitar actualizaciones innecesarias.</p>
+                </div>
+                <div class="card">
+                    <h3>Baja auditada</h3>
+                    <p>Como administrador, quiero ver los datos del usuario antes de pulsar F5 y confirmar la eliminación porque esa acción no se puede deshacer.</p>
+                </div>
+            </div>
+            <ul>
+                <li>Los <strong>userId</strong> deben ser únicos, en mayúsculas y de máximo 8 caracteres (<code>UserAddPage.tsx</code> y <code>useUserAdd.ts</code>).</li>
+                <li>Solo los admins pueden crear/modificar el rol <code>A</code> (<code>UserAddPage.tsx</code> protege el acceso).</li>
+                <li>Las contraseñas deben tener máximo 8 caracteres en alta y exactamente 8 en actualización. Las bajas requieren validación previa.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>⌨️ Teclas y UX heredado</h2>
+            <table class="key-table">
+                <thead>
+                    <tr>
+                        <th>Pantalla</th>
+                        <th>Atajo</th>
+                        <th>Comportamiento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Listado (<code>UserListScreen.tsx</code>)</td>
+                        <td>ENTER</td>
+                        <td>Busca si no hay selección; si hay <code>Select</code> con <code>U</code> o <code>D</code> navega a la pantalla correcta (<code>handleEnterKey</code>).</td>
+                    </tr>
+                    <tr>
+                        <td>Listado</td>
+                        <td>F7 / F8</td>
+                        <td>Paginación hacia atrás/adelante usando <code>handlePageChange</code> y validaciones desde <code>useUserList.ts</code>.</td>
+                    </tr>
+                    <tr>
+                        <td>Alta</td>
+                        <td>ENTER / F3 / F4 / F12</td>
+                        <td>ENTER agrega; F3 regresa a <code>/menu/admin</code>; F4 limpia; F12 sale del sistema.</td>
+                    </tr>
+                    <tr>
+                        <td>Actualización</td>
+                        <td>F3 / F4 / F5 / F12</td>
+                        <td>F3 guarda y sale; F5 guarda; F4 limpia; F12/Escape cancela. ENTER busca por ID.</td>
+                    </tr>
+                    <tr>
+                        <td>Baja</td>
+                        <td>ENTER / F5 / F3</td>
+                        <td>ENTER busca; F5 abre diálogo de borrado; F3/F12 vuelven al listado; hay confirmación adicional.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 1rem; font-size: 0.95rem; color: #4e566f;">Todos los atajos están implementados con <code>onKeyDown</code> sobre el contenedor general y actualizan <code>navigate</code> según el flujo esperado.</p>
+        </section>
+
+        <section class="section">
+            <h2>🛡️ Validaciones y controles</h2>
+            <ul>
+                <li><code>useUserAdd.ts</code> fuerza la longitud máxima de cada campo y transforma <code>userId</code> y <code>userType</code> a mayúsculas.</li>
+                <li><code>useUserUpdate.ts</code> detecta cambios reales, exige contraseña de 8 caracteres y muestra mensajes en <code>alert</code> (F5 en la UI).</li>
+                <li><code>useUserDelete.ts</code> evita eliminar si no se cargó usuario, limpia los errores con cada cambio y sabe si hay un <code>userId</code> en la query string para auto-fetch.</li>
+                <li><code>useUserList.ts</code> valida que las selecciones solo usen <code>U</code> o <code>D</code>, y que el usuario no navegue fuera de los límites de página.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🧪 Fundamento técnico</h2>
+            <ul>
+                <li>Componentes: <code>UserListScreen.tsx</code>, <code>UserAddScreen.tsx</code>, <code>UserUpdateScreen.tsx</code>, <code>UserDeleteScreen.tsx</code> (todos usan <code>SystemHeader</code> y Material-UI, además de <code>Alert</code>, <code>Chip</code> y <code>Dialog</code>).</li>
+                <li>Hooks: <code>useUserList.ts</code>, <code>useUserAdd.ts</code>, <code>useUserUpdate.ts</code>, <code>useUserDelete.ts</code>.</li>
+                <li>Adaptador: <code>UserApiAdapter</code> traduce entre los tipos del frontend y los endpoints reales, maneja paginación (prev/next) y la selección procesada por <code>/users/process-selection</code>.</li>
+                <li>Tipos: <code>UserSecurityData</code>, <code>UserListRequest</code>, <code>UserAddRequest</code>, <code>UserUpdateData</code>, <code>UserDeleteData</code> desde <code>app/types/</code>.</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>📡 APIs y modelos</h2>
+            <ul>
+                <li><code>GET /users/list</code>: listado principal con paginación (adaptado por <code>UserApiAdapter.getUserList</code>).</li>
+                <li><code>POST /users</code>: alta mediante <code>UserApiAdapter.createUser</code>, con manejo de errores 400/409/500.</li>
+                <li><code>GET/PUT/DELETE /users/{userId}</code>: usado por los formularios en <code>useUserUpdate.ts</code> y <code>useUserDelete.ts</code>.</li>
+                <li><code>POST /users/process-selection</code>: opcional para mantener el flujo mainframe; permite saber si el administrador eligió actualizar o borrar.</li>
+                <li>El tipo <code>UserSecurityData</code> incluye <code>userId</code>, <code>firstName</code>, <code>lastName</code>, <code>userType</code> (con <code>normalizeUserType</code> que transforma <code>R</code> a <code>U</code>), y metadatos opcionales (<code>createdDate</code>, <code>lastLoginDate</code>, <code>isActive</code>).</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2>🧰 Entorno de desarrollo</h2>
+            <ul>
+                <li><code>import.meta.env.VITE_USE_MOCKS</code> decide si <code>useUserList</code>, <code>useUserAdd</code>, etc., llaman a MSW (<code>app/mocks/userListHandlers.ts</code>) o al backend real.</li>
+                <li>Los mocks se sincronizan con <code>validate-mocks.sh</code> para que <code>userListHandlers.ts</code> y <code>handlers.ts</code> tengan los mismos 10 usuarios.</li>
+                <li>La navegación hacia <code>/admin/users/list</code> se repite en los hooks para mantener coherencia cuando se presiona F3, F12 o después de guardar/borrar.</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p>Versión 1.0 · Documentación generada el 2026-02-09 · Consulta <a href="../system-overview.md#-user---gestión-de-usuarios-del-sistema">el resumen del módulo</a> para contexto adicional.</p>
+        </footer>
+    </div>
+</body>
+</html>
