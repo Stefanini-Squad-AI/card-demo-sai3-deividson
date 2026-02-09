@@ -18,8 +18,8 @@ async function prepare() {
 }
 
 prepare().then(() => {
-  // Obtener el basename desde la variable de entorno de Vite
-  const basename = import.meta.env.DEV ? '/' : '/demo-sai-3-aws';
+  // Basename alineado con base de Vite (repo name en GitHub Pages)
+  const basename = (import.meta.env.BASE_URL || "/").replace(/\/$/, "") || "/";
   
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>

@@ -23,8 +23,8 @@ export default defineConfig(({ mode }) => {
         }
       }
     ],
-    // ✅ Base diferente según el entorno
-    base: isDevelopment ? "/" : "/demo-sai-3-aws/",
+    // ✅ Base según entorno; en Pages usa el nombre del repo (desde VITE_BASE_PATH en el workflow)
+    base: isDevelopment ? "/" : `/${process.env.VITE_BASE_PATH || "card-demo-sai3-deividson"}/`,
     resolve: {
       alias: {
         "~": resolve(__dirname, "./app"),
