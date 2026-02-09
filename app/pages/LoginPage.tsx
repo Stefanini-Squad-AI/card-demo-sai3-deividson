@@ -12,6 +12,10 @@ import {
   IconButton,
   Stack,
   Divider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   useTheme,
   alpha,
   Tooltip,
@@ -35,7 +39,11 @@ import {
   selectIsAuthenticated,
   selectCurrentUser
 } from '~/features/auth/authSlice';
+import { useLanguage } from '~/hooks/useLanguage';
 import type { LoginCredentials } from '~/types';
+import type { LoginLanguageCode, LoginTranslation } from '~/data/locales/login';
+
+type FieldValidationKey = keyof LoginTranslation['validations'];
 
 export default function LoginPage() {
   const theme = useTheme();
@@ -47,15 +55,17 @@ export default function LoginPage() {
   const authError = useAppSelector(selectAuthError);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const user = useAppSelector(selectCurrentUser);
+  const { language, setLanguage, translation, languageOptions } = useLanguage();
 
   const [formData, setFormData] = useState<LoginCredentials>({
     userId: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof LoginCredentials, FieldValidationKey>>>({});
   
   const hasRedirected = useRef(false);
+  const hasFieldErrors = Object.values(fieldErrors).some(Boolean);
 
   // ✅ NUEVO: Función para abrir documentación
   const handleOpenDocs = useCallback(() => {
@@ -94,18 +104,18 @@ export default function LoginPage() {
   }, [isAuthenticated]);
 
   const validateForm = useCallback(() => {
-    const errors: Record<string, string> = {};
+    const errors: Partial<Record<keyof LoginCredentials, FieldValidationKey>> = {};
     
     if (!formData.userId.trim()) {
-      errors.userId = 'Please enter your user ID.';
+      errors.userId = 'userIdRequired';
     } else if (formData.userId.length > 8) {
-      errors.userId = 'User ID must be 8 characters or less.';
+      errors.userId = 'userIdMax';
     }
 
     if (!formData.password.trim()) {
-      errors.password = 'Please enter your password.';
+      errors.password = 'passwordRequired';
     } else if (formData.password.length > 8) {
-      errors.password = 'Password must be 8 characters or less.';
+      errors.password = 'passwordMax';
     }
     
     setFieldErrors(errors);
@@ -121,7 +131,7 @@ export default function LoginPage() {
       setFormData(prev => ({ ...prev, [field]: value.toUpperCase() }));
       
       if (fieldErrors[field]) {
-        setFieldErrors(prev => ({ ...prev, [field]: '' }));
+        setFieldErrors(prev => ({ ...prev, [field]: undefined }));
       }
       
       if (authError) {
@@ -160,16 +170,10 @@ export default function LoginPage() {
     dispatch(clearError());
   }, [dispatch]);
 
-  const getErrorMessage = (error: string) => {
-    const errorMappings: Record<string, string> = {
-      'Invalid credentials': 'Incorrect credentials. Please try again.',
-      'User not found': 'User not found. Please verify your ID.',
-      'Please check your input': 'Please check your user ID and password.',
-      'Network error occurred': 'Unable to verify credentials. Check your connection.',
-    };
-   
-    return errorMappings[error] || error;
-  };
+  const getErrorMessage = useCallback(
+    (error: string) => translation.backendErrors[error] ?? translation.backendErrorFallback,
+    [translation]
+  );
 
   // ✅ CORRECCIÓN: No mostrar el formulario si ya está autenticado
   if (isAuthenticated && user) {
@@ -195,21 +199,52 @@ export default function LoginPage() {
           <SystemHeader
             transactionId="CC00"
             programName="COSGN00C"
-            title="CardDemo - Card Demo Application"
-            subtitle="Mainframe Modernization"
+            title={translation.headerTitle}
+            subtitle={translation.headerSubtitle}
             showNavigation={false}
           />
           
-          {/* ✅ NUEVO: Botón de documentación discreto en el header */}
+          {/* Selector de idioma + documentación en esquina superior derecha */}
           <Box
             sx={{
               position: 'absolute',
               top: 8,
               right: 8,
               zIndex: 10,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
             }}
           >
-            <Tooltip title="View documentation" arrow>
+            <FormControl
+              size="small"
+              variant="outlined"
+              sx={{
+                minWidth: 150,
+                backgroundColor: alpha(theme.palette.background.paper, 0.9),
+                borderRadius: 1,
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: alpha(theme.palette.divider, 0.3),
+                },
+              }}
+            >
+              <InputLabel>{translation.languageLabel}</InputLabel>
+              <Select
+                value={language}
+                label={translation.languageLabel}
+                onChange={(event) =>
+                  setLanguage(event.target.value as LoginLanguageCode)
+                }
+              >
+                {languageOptions.map(option => (
+                  <MenuItem key={option.code} value={option.code}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Tooltip title={translation.docTooltip} arrow>
               <IconButton
                 onClick={handleOpenDocs}
                 size="small"
@@ -296,7 +331,7 @@ export default function LoginPage() {
               gutterBottom
               sx={{ mb: 3 }}
             >
-              Enter your User ID and password, then press ENTER:
+              {translation.heroPrompt}
             </Typography>
 
             <Box
@@ -306,11 +341,15 @@ export default function LoginPage() {
             >
               <Stack spacing={3}>
                 <TextField
-                  label="User ID"
+                  label={translation.userIdLabel}
                   value={formData.userId}
                   onChange={handleInputChange('userId')}
                   error={!!fieldErrors.userId}
-                  helperText={fieldErrors.userId || '(Max 8 characters)'}
+                  helperText={
+                    fieldErrors.userId
+                      ? translation.validations[fieldErrors.userId]
+                      : translation.helperMaxChars
+                  }
                   disabled={isLoading}
                   autoFocus
                   inputProps={{
@@ -332,12 +371,16 @@ export default function LoginPage() {
                 />
 
                 <TextField
-                  label="Password"
+                  label={translation.passwordLabel}
                   type={showPassword ? 'text' : 'password'}
                   value={formData.password}
                   onChange={handleInputChange('password')}
                   error={!!fieldErrors.password}
-                  helperText={fieldErrors.password || '(Max 8 characters)'}
+                  helperText={
+                    fieldErrors.password
+                      ? translation.validations[fieldErrors.password]
+                      : translation.helperMaxChars
+                  }
                   disabled={isLoading}
                   autoComplete="current-password"
                   inputProps={{
@@ -369,7 +412,7 @@ export default function LoginPage() {
                   }}
                 />
 
-                {(authError || Object.keys(fieldErrors).length > 0) && (
+                {(authError || hasFieldErrors) && (
                   <>
                     {authError ? (
                       <Alert
@@ -384,7 +427,7 @@ export default function LoginPage() {
                         severity="error"
                         sx={{ borderRadius: 2 }}
                       >
-                        Please correct the errors above.
+                        {translation.correctionAlert}
                       </Alert>
                     )}
                   </>
@@ -417,7 +460,7 @@ export default function LoginPage() {
                     },
                   }}
                 >
-                  {isLoading ? 'Signing in...' : 'ENTER = Sign in'}
+                  {isLoading ? translation.buttonLoading : translation.buttonLabel}
                 </Button>
               </Stack>
             </Box>
@@ -426,7 +469,7 @@ export default function LoginPage() {
 
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                Sample credentials:
+                {translation.sampleTitle}
               </Typography>
               <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap">
                 <Typography variant="caption" sx={{ 
@@ -436,7 +479,7 @@ export default function LoginPage() {
                   py: 0.5,
                   borderRadius: 1,
                 }}>
-                  Admin: ADMIN001 / PASSWORD
+                  {translation.sampleAdmin}
                 </Typography>
                 <Typography variant="caption" sx={{ 
                   bgcolor: 'success.main', 
@@ -445,7 +488,7 @@ export default function LoginPage() {
                   py: 0.5,
                   borderRadius: 1,
                 }}>
-                  Back-Office: USER001 / PASSWORD
+                  {translation.sampleBackOffice}
                 </Typography>
               </Stack>
             </Box>
@@ -460,7 +503,7 @@ export default function LoginPage() {
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              ENTER = Sign in • F3 = Exit
+              {translation.footerText}
             </Typography>
           </Box>
         </Paper>
