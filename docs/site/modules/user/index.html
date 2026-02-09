@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👤 USER - Guía de Historias de Usuario</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background: linear-gradient(135deg, #4c6ef5, #8b5cf6);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 30px rgba(76, 110, 245, 0.25);
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .header p {
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        .section {
+            background: white;
+            margin: 20px 0;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        }
+        .section h2 {
+            color: #4c6ef5;
+            border-bottom: 3px solid #4c6ef5;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .card h4 {
+            color: #4c6ef5;
+            margin-top: 0;
+        }
+        .us-example {
+            background: #ebf4ff;
+            border-left: 4px solid #4c6ef5;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        .complexity-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .badge {
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: white;
+        }
+        .badge.simple { background: #34d399; }
+        .badge.medium { background: #facc15; color: #92400e; }
+        .badge.complex { background: #f87171; }
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-size: 0.9rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        th {
+            background: #4c6ef5;
+            color: white;
+        }
+        ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        .criteria {
+            background: #fef9c3;
+            border-left: 4px solid #f59e0b;
+            margin-top: 15px;
+            padding: 10px 15px;
+            border-radius: 6px;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 10px;
+            text-decoration: none;
+            color: #4c6ef5;
+            font-weight: 600;
+        }
+        .note {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>👤 USER - Administración de Usuarios</h1>
+            <p>Guía práctica para escribir historias de usuario seguras y alineadas con el mainframe original (COUSR00C - COUSR03C).</p>
+            <p><strong>Propósito:</strong> listar, agregar, actualizar y eliminar usuarios del sistema bajo controles administrativos.</p>
+            <p><strong>Transacciones visibles:</strong> CU00 List Users, CU01 Add, CU02 Update, CU03 Delete.</p>
+        </header>
+
+        <section class="section">
+            <h2>📋 Resumen del módulo</h2>
+            <p>El módulo USER vive en `/admin/users/*`, está protegido por `ProtectedRoute requiredRole="admin"` (`app/App.tsx`) y se alimenta de `UserApiAdapter` (`app/services/userApi.ts`). Las cuatro pantallas usan `SystemHeader` (`app/components/layout/SystemHeader.tsx`) para mostrar transacción/programa y ofrecer botones Home/Logout.</p>
+            <p>El flujo se complementa con el menú de administración (`app/data/menuData.ts`). El hook `useUserList` detecta `VITE_USE_MOCKS`, consume `apiClient`, y muestra mensajes de error con `Alert` (por ejemplo, paginación fuera de rango) antes de redirigir.</p>
+        </section>
+
+        <section class="section">
+            <h2>🎯 Plantillas de Historias de Usuario</h2>
+            <div class="grid">
+                <div class="card">
+                    <h4>Lista con teclado de función</h4>
+                    <p>Como administrador, quiero revisar la lista de usuarios, seleccionar U/D y procesar la acción con ENTER sin cambiar de vista.</p>
+                    <div class="us-example">
+                        <strong>Ejemplo:</strong> Como admin, selecciono U en el usuario `USER001` y presiono ENTER para ir a la pantalla de actualización.
+                    </div>
+                    <div class="criteria">
+                        Validaciones: búsqueda en mayúsculas, tabla con relleno a 10 filas, chips con iconos y paginación F7/F8.
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>Alta de usuarios</h4>
+                    <p>Como administrador, quiero crear nuevos usuarios con campos obligatorios y contraseñas de 8 caracteres para mantener la seguridad.</p>
+                    <div class="us-example">
+                        <strong>Ejemplo:</strong> Al crear `USER123`, el sistema rechaza IDs más largos a 8 caracteres y me avisa con Alert si el ID ya existe.</div>
+                    <div class="criteria">
+                        Reglas: `userId`, `password` en mayúsculas, chip informativo (A = Admin, U = User), F4 limpia formulario y F12 sale del sistema.</div>
+                </div>
+                <div class="card">
+                    <h4>Actualización guiada</h4>
+                    <p>Como administrador, quiero buscar un usuario, editar nombre/rol y guardar con F5 o F3 (Save & Exit) después de validar que hubo cambios.</p>
+                    <div class="us-example">
+                        <strong>Ejemplo:</strong> Modifico el rol de `USER123` de `U` a `A`, recibo el mensaje `User USER123 has been updated ...` y el screen vuelve a la lista.</div>
+                    <div class="criteria">
+                        Validaciones: texto de ayuda `(8 Char)`, detección de cambios, no permite guardar si el password no tiene 8 caracteres exactos.</div>
+                </div>
+                <div class="card">
+                    <h4>Eliminación segura</h4>
+                    <p>Como administrador, quiero revisar detalles en modo lectura, ver el tipo de usuario y confirmar la baja con un diálogo que no permite revertir.</p>
+                    <div class="us-example">
+                        <strong>Ejemplo:</strong> Después de buscar `USER123`, el diálogo muestra `Warning: This action cannot be undone.` antes de llamar a DELETE.</div>
+                    <div class="criteria">
+                        Restricción: no se puede borrar el último admin (mock devuelve 403) y F3 regresa al listado.</div>
+                </div>
+            </div>
+            <div class="complexity-badges">
+                <span class="badge simple">Simple 1-2 pts</span>
+                <span class="badge medium">Medio 3-5 pts</span>
+                <span class="badge complex">Complejo 5-8 pts</span>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🔧 Fundación técnica</h2>
+            <div class="grid">
+                <div class="card">
+                    <h4>UserListScreen (app/components/user/UserListScreen.tsx)</h4>
+                    <p>Tabla responsiva con `Select` por fila y chips. Los botones replican F3/F7/F8/ENTER y envían eventos a `useUserList`. Usa `SystemHeader` con `transactionId="CU00"`.</p>
+                </div>
+                <div class="card">
+                    <h4>useUserList (app/hooks/useUserList.ts)</h4>
+                    <p>Maneja estado, paginación (10 filas), selección U/D, búsquedas uppercase y navegación (`navigate('/admin/users/update?userId=...')`).</p>
+                </div>
+                <div class="card">
+                    <h4>UserAddScreen + useUserAdd</h4>
+                    <p>Formulario Grid con helper texts, `showPassword`, chips informativos y controles ENTER/F4/F3/F12. `useUserAdd` llama a `UserApiAdapter.createUser` y limpia formulario al éxito.</p>
+                </div>
+                <div class="card">
+                    <h4>UserUpdateScreen + useUserUpdate</h4>
+                    <p>Busca `userId`, carga datos (GET /api/users/{userId}) y habilita campos. Guarda con F5 o F3, y regresa a `/admin/users/list` mediante `navigate`.</p>
+                </div>
+                <div class="card">
+                    <h4>UserDeleteScreen + useUserDelete</h4>
+                    <p>Busca y muestra datos de solo lectura, abre `<Dialog>` previo a DELETE y maneja errores si el admin no puede ser eliminado.</p>
+                </div>
+                <div class="card">
+                    <h4>UserApiAdapter (app/services/userApi.ts)</h4>
+                    <p>Transforma `searchUserId` → `startUserId`, normaliza `userType` (`R`→`U`), y ofrece `processUserSelection`, `createUser`, `deleteUser`, `updateUser` para el backend Spring Boot y mocks.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>🌐 APIs y datos</h2>
+            <p>Los mocks están en `app/mocks/userListHandlers.ts`, `userAddHandlers.ts`, `userUpdateHandlers.ts` y `userDeleteHandlers.ts`, lo que permite probar los mensajes específicos (`Cannot delete administrator users`, `User ID already exist...`).</p>
+            <table>
+                <thead>
+                    <tr><th>Método</th><th>Endpoint</th><th>Propósito</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>GET</td><td>/api/users/list</td><td>Lista paginada con `startUserId`, `pageNumber`, `direction`.</td></tr>
+                    <tr><td>POST</td><td>/api/users/process-selection</td><td>Valida selección U/D antes de navegar.</td></tr>
+                    <tr><td>POST</td><td>/api/users</td><td>Alta de usuario; responde mensaje y entidad creada.</td></tr>
+                    <tr><td>GET</td><td>/api/users/{userId}</td><td>Carga datos completos para update/delete (mocks usan /api/users/security/{userId}).</td></tr>
+                    <tr><td>PUT</td><td>/api/users/{userId}</td><td>Actualiza nombre, password y tipo.</td></tr>
+                    <tr><td>DELETE</td><td>/api/users/{userId}</td><td>Elimina usuario (valida que no borrar último admin).</td></tr>
+                </tbody>
+            </table>
+            <pre>
+interface UserSecurityData {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  userType: 'A' | 'U' | 'R';
+  isActive?: boolean;
+}
+const normalizeUserType = (userType) => userType === 'R' ? 'U' : userType;
+            </pre>
+        </section>
+
+        <section class="section">
+            <h2>🧭 Patrones y criterios</h2>
+            <ul>
+                <li><strong>Teclas de función:</strong> ENTER dispara búsqueda si no hay selección, F3 = Back (lista/exit), F4 = Clear, F5 = Save, F7/F8 = paginación, F12 = Exit.</li>
+                <li><strong>Selcción U/D:</strong> cada fila tiene `Select` con U (Update) y D (Delete); `handleEnterKey` procesa la primera entrada válida.</li>
+                <li><strong>Campos en mayúsculas:</strong> `userId`, `password` y `userType` usan `toUpperCase()` en los hooks.</li>
+                <li><strong>Validaciones:</strong> `userId` y `password` tienen 8 caracteres máximos (exactos en update), `firstName` y `lastName` aceptan 20 y no pueden ir vacíos.</li>
+                <li><strong>Alertas y mensajes:</strong> `useMutation` muestra `error`/`success` con componentes `Alert`, los logs (`console.log`) actúan como auditoría temporal.</li>
+            </ul>
+            <div class="criteria">
+                Criterios de aceptación: los formulario deben mostrar `helperText` con el tamaño permitido y limpiar errores tras cada cambio; la lista debe mostrar chips con `AdminPanelSettings` o `Person` y respetar la paginación de 10 filas.
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>✅ Control de complejidad</h2>
+            <p>Estimaciones orientativas para Product Owners:</p>
+            <ul>
+                <li>Simple: modificar helper text o color de chips en `UserListScreen` (1-2 pts).</li>
+                <li>Medio: agregar validación adicional del password o un nuevo filtro de búsqueda (3-5 pts).</li>
+                <li>Complejo: reemplazar la paginación por cursor/offset, incorporar nuevos `UserType` y extender `normalizeUserType` y backend (5-8 pts).</li>
+            </ul>
+        </section>
+
+        <footer class="section">
+            <p class="note">Referencias rápidas: menús en `app/data/menuData.ts`, rutas en `app/App.tsx` y mocks con MSW (`app/mocks/user*.ts`).</p>
+            <a class="back-link" href="../index.html">← Volver al hub de documentación</a>
+        </footer>
+    </div>
+</body>
+</html>
