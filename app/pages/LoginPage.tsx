@@ -194,8 +194,8 @@ export default function LoginPage() {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        {/* ✅ MODIFICADO: SystemHeader con botón de documentación */}
-        <Box sx={{ position: 'relative' }}>
+        {/* SystemHeader con controles en esquina superior derecha */}
+        <Box sx={{ position: 'relative', mb: 3 }}>
           <SystemHeader
             transactionId="CC00"
             programName="COSGN00C"
@@ -203,8 +203,7 @@ export default function LoginPage() {
             subtitle={translation.headerSubtitle}
             showNavigation={false}
           />
-          
-          {/* Selector de idioma + documentación en esquina superior derecha */}
+
           <Box
             sx={{
               position: 'absolute',
@@ -212,7 +211,8 @@ export default function LoginPage() {
               right: 8,
               zIndex: 10,
               display: 'flex',
-              alignItems: 'center',
+              flexDirection: { xs: 'column', sm: 'row' },
+              alignItems: { xs: 'flex-end', sm: 'center' },
               gap: 1,
             }}
           >
@@ -273,44 +273,60 @@ export default function LoginPage() {
             borderRadius: 3,
             overflow: 'hidden',
             background: `linear-gradient(145deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.default, 0.1)})`,
+            width: 'clamp(320px, 90vw, 1100px)',
+            mx: 'auto',
           }}
         >
           <Box
             sx={{
-              p: 4,
-              textAlign: 'center',
-              background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              color: 'white',
+              display: 'flex',
+              flexDirection: { xs: 'column', lg: 'row' },
+              alignItems: 'stretch',
+              gap: { xs: 0, lg: 4 },
             }}
           >
-            <CreditCard sx={{ fontSize: 48, mb: 2 }} />
-            <Typography variant="h4" fontWeight={600} gutterBottom>
-              NATIONAL RESERVE NOTE
-            </Typography>
-            <Typography variant="h6" sx={{ opacity: 0.9 }}>
-              THE UNITED STATES OF KICSLAND
-            </Typography>
-            
-            {/* ✅ CORRECCIÓN PRINCIPAL: Billete ASCII con espacios preservados */}
             <Box
               sx={{
-                mt: 2,
-                p: 2,
-                border: '2px solid rgba(255,255,255,0.3)',
-                borderRadius: 2,
-                fontFamily: 'monospace',
-                fontSize: '0.75rem',
-                lineHeight: 1.2,
-                whiteSpace: 'pre',
+                flex: { xs: '1 1 auto', lg: '1 1 50%' },
+                minWidth: { lg: 0 },
+                maxWidth: { lg: '55%' },
+                p: { xs: 3, md: 4 },
+                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                color: 'white',
                 textAlign: 'center',
-                overflow: 'auto',
-                backgroundColor: 'rgba(0,0,0,0.1)',
                 display: 'flex',
-                justifyContent: 'center',
+                flexDirection: 'column',
                 alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              {`+========================================+
+              <CreditCard sx={{ fontSize: 48, mb: 2 }} />
+              <Typography variant="h4" fontWeight={600} gutterBottom>
+                NATIONAL RESERVE NOTE
+              </Typography>
+              <Typography variant="h6" sx={{ opacity: 0.9 }}>
+                THE UNITED STATES OF KICSLAND
+              </Typography>
+
+              <Box
+                sx={{
+                  mt: 2,
+                  p: 2,
+                  border: '2px solid rgba(255,255,255,0.3)',
+                  borderRadius: 2,
+                  fontFamily: 'monospace',
+                  fontSize: '0.75rem',
+                  lineHeight: 1.2,
+                  whiteSpace: 'pre',
+                  textAlign: 'center',
+                  overflow: 'auto',
+                  backgroundColor: 'rgba(0,0,0,0.1)',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                {`+========================================+
 |%%%%%%%  NATIONAL RESERVE NOTE  %%%%%%%%|
 |%(1)  THE UNITED STATES OF KICSLAND (1)%|
 |%$$              ___       ********  $$%|
@@ -319,26 +335,30 @@ export default function LoginPage() {
 |%(1)          ---m-m---             (1)%|
 |%%~~~~~~~~~~~ ONE DOLLAR ~~~~~~~~~~~~~%%|
 +========================================+`}
+              </Box>
             </Box>
-          </Box>
-
-          {/* Resto del componente sin cambios... */}
-          <Box sx={{ p: 4 }}>
-            <Typography
-              variant="h6"
-              color="primary.main"
-              textAlign="center"
-              gutterBottom
-              sx={{ mb: 3 }}
-            >
-              {translation.heroPrompt}
-            </Typography>
 
             <Box
               component="form"
               onSubmit={handleSubmit}
-              sx={{ maxWidth: 400, mx: 'auto' }}
+              sx={{
+                flex: { xs: '1 1 auto', lg: '1 1 50%' },
+                minWidth: { lg: 0 },
+                maxWidth: { lg: '55%' },
+                py: { xs: 3, md: 4 },
+                px: { xs: 3, md: 4 },
+              }}
             >
+              <Typography
+                variant="h6"
+                color="primary.main"
+                textAlign="center"
+                gutterBottom
+                sx={{ mb: 3 }}
+              >
+                {translation.heroPrompt}
+              </Typography>
+
               <Stack spacing={3}>
                 <TextField
                   label={translation.userIdLabel}
@@ -463,34 +483,34 @@ export default function LoginPage() {
                   {isLoading ? translation.buttonLoading : translation.buttonLabel}
                 </Button>
               </Stack>
-            </Box>
 
-            <Divider sx={{ my: 3 }} />
+              <Divider sx={{ my: 3 }} />
 
-            <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="body2" color="text.secondary" gutterBottom>
-                {translation.sampleTitle}
-              </Typography>
-              <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap">
-                <Typography variant="caption" sx={{ 
-                  bgcolor: 'warning.main', 
-                  color: 'warning.contrastText',
-                  px: 1,
-                  py: 0.5,
-                  borderRadius: 1,
-                }}>
-                  {translation.sampleAdmin}
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {translation.sampleTitle}
                 </Typography>
-                <Typography variant="caption" sx={{ 
-                  bgcolor: 'success.main', 
-                  color: 'success.contrastText',
-                  px: 1,
-                  py: 0.5,
-                  borderRadius: 1,
-                }}>
-                  {translation.sampleBackOffice}
-                </Typography>
-              </Stack>
+                <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap">
+                  <Typography variant="caption" sx={{ 
+                    bgcolor: 'warning.main', 
+                    color: 'warning.contrastText',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 1,
+                  }}>
+                    {translation.sampleAdmin}
+                  </Typography>
+                  <Typography variant="caption" sx={{ 
+                    bgcolor: 'success.main', 
+                    color: 'success.contrastText',
+                    px: 1,
+                    py: 0.5,
+                    borderRadius: 1,
+                  }}>
+                    {translation.sampleBackOffice}
+                  </Typography>
+                </Stack>
+              </Box>
             </Box>
           </Box>
 
