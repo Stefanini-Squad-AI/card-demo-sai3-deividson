@@ -24,6 +24,8 @@ export interface LoginTranslation {
   };
   backendErrors: Record<string, string>;
   backendErrorFallback: string;
+  cardBrandName: string;
+  cardBrandTagline: string;
 }
 
 export const loginTranslations: Record<LoginLanguageCode, LoginTranslation> = {
@@ -56,6 +58,8 @@ export const loginTranslations: Record<LoginLanguageCode, LoginTranslation> = {
       'Network error occurred': 'No se pudo verificar. Revise su conexión.',
     },
     backendErrorFallback: 'Ocurrió un error inesperado. Intente nuevamente.',
+    cardBrandName: 'TuCreditoOnline',
+    cardBrandTagline: 'Panel de Administración',
   },
   en: {
     headerTitle: 'CardDemo - Card Demo Application',
@@ -86,6 +90,8 @@ export const loginTranslations: Record<LoginLanguageCode, LoginTranslation> = {
       'Network error occurred': 'Unable to verify credentials. Check your connection.',
     },
     backendErrorFallback: 'An unexpected error occurred. Please try again.',
+    cardBrandName: 'TuCreditoOnline',
+    cardBrandTagline: 'Admin Control Panel',
   },
 };
 
