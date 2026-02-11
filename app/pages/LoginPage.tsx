@@ -300,13 +300,42 @@ export default function LoginPage() {
                 justifyContent: 'center',
               }}
             >
-              <CreditCard sx={{ fontSize: 48, mb: 2 }} />
-              <Typography variant="h4" fontWeight={600} gutterBottom>
-                NATIONAL RESERVE NOTE
-              </Typography>
-              <Typography variant="h6" sx={{ opacity: 0.9 }}>
-                THE UNITED STATES OF KICSLAND
-              </Typography>
+              <Box
+                sx={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 2,
+                  flexWrap: 'wrap',
+                  textAlign: 'left',
+                  mb: { xs: 3, md: 4 },
+                }}
+              >
+                <Box
+                  sx={{
+                    width: 56,
+                    height: 56,
+                    borderRadius: 2,
+                    bgcolor: alpha(theme.palette.common.white, 0.15),
+                    border: `1px solid ${alpha(theme.palette.common.white, 0.4)}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.2)}`,
+                  }}
+                >
+                  <CreditCard fontSize="large" />
+                </Box>
+                <Box>
+                  <Typography variant="h4" fontWeight={600} sx={{ lineHeight: 1.2 }}>
+                    {translation.cardBrandName}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
+                    {translation.cardBrandTagline}
+                  </Typography>
+                </Box>
+              </Box>
 
               <Box
                 sx={{
