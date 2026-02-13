@@ -200,12 +200,12 @@ export default function LoginPage() {
             sx={{
               display: 'flex',
               flexDirection: { xs: 'column', md: 'row' },
-              alignItems: { xs: 'stretch', md: 'flex-start' },
-              justifyContent: { xs: 'flex-start', md: 'space-between' },
-              gap: { xs: 1.5, md: 2 },
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              gap: { xs: 1.5, md: 0 },
             }}
           >
-            <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Box sx={{ flex: 1, minWidth: 0, pr: { md: 2 } }}>
               <SystemHeader
                 transactionId="CC00"
                 programName="COSGN00C"
@@ -216,6 +216,8 @@ export default function LoginPage() {
             </Box>
 
             <Box
+              component="section"
+              aria-label="language and documentation controls"
               sx={{
                 display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
@@ -223,17 +225,17 @@ export default function LoginPage() {
                 justifyContent: { xs: 'flex-start', md: 'flex-end' },
                 gap: 1.5,
                 width: { xs: '100%', md: 'auto' },
-                mt: { xs: 1.5, md: 0 },
-                alignSelf: { md: 'flex-start' },
                 ml: { md: 2 },
+                flexShrink: 0,
               }}
             >
               <FormControl
                 size="small"
                 variant="outlined"
                 sx={{
-                  width: { xs: '100%', md: 'auto' },
+                  width: { xs: '100%', sm: '100%', md: 'auto' },
                   minWidth: { md: 150 },
+                  flexShrink: 0,
                   backgroundColor: alpha(theme.palette.background.paper, 0.9),
                   borderRadius: 1,
                   '& .MuiOutlinedInput-notchedOutline': {
@@ -286,6 +288,7 @@ export default function LoginPage() {
               </Tooltip>
             </Box>
           </Box>
+        </Box>
 
         <Paper
           elevation={3}
