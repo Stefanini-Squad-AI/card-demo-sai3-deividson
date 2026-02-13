@@ -201,6 +201,7 @@ export default function LoginPage() {
               display: 'flex',
               flexDirection: { xs: 'column', md: 'row' },
               alignItems: { xs: 'stretch', md: 'flex-start' },
+              justifyContent: { xs: 'flex-start', md: 'space-between' },
               gap: { xs: 1.5, md: 2 },
             }}
           >
@@ -218,19 +219,21 @@ export default function LoginPage() {
               sx={{
                 display: 'flex',
                 flexDirection: { xs: 'column', md: 'row' },
-                justifyContent: 'flex-end',
-                alignItems: { xs: 'stretch', md: 'center' },
+                alignItems: { xs: 'flex-end', md: 'center' },
+                justifyContent: { xs: 'flex-start', md: 'flex-end' },
                 gap: 1.5,
                 width: { xs: '100%', md: 'auto' },
                 mt: { xs: 1.5, md: 0 },
+                alignSelf: { md: 'flex-start' },
+                ml: { md: 2 },
               }}
             >
               <FormControl
                 size="small"
                 variant="outlined"
                 sx={{
-                  width: { xs: '100%', sm: 'auto' },
-                  minWidth: 150,
+                  width: { xs: '100%', md: 'auto' },
+                  minWidth: { md: 150 },
                   backgroundColor: alpha(theme.palette.background.paper, 0.9),
                   borderRadius: 1,
                   '& .MuiOutlinedInput-notchedOutline': {
@@ -259,6 +262,7 @@ export default function LoginPage() {
                   onClick={handleOpenDocs}
                   size="small"
                   sx={{
+                    alignSelf: { xs: 'flex-end', md: 'center' },
                     width: 44,
                     height: 44,
                     color: 'text.secondary',
