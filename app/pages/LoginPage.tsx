@@ -194,78 +194,94 @@ export default function LoginPage() {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        {/* SystemHeader con controles en esquina superior derecha */}
-        <Box sx={{ position: 'relative', mb: 3 }}>
-          <SystemHeader
-            transactionId="CC00"
-            programName="COSGN00C"
-            title={translation.headerTitle}
-            subtitle={translation.headerSubtitle}
-            showNavigation={false}
-          />
-
+        {/* SystemHeader y controles responsivos */}
+        <Box sx={{ mb: 3 }}>
           <Box
             sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-              zIndex: 10,
               display: 'flex',
-              flexDirection: { xs: 'column', sm: 'row' },
-              alignItems: { xs: 'flex-end', sm: 'center' },
-              gap: 1,
+              flexDirection: { xs: 'column', md: 'row' },
+              alignItems: { xs: 'stretch', md: 'flex-start' },
+              gap: { xs: 1.5, md: 2 },
             }}
           >
-            <FormControl
-              size="small"
-              variant="outlined"
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <SystemHeader
+                transactionId="CC00"
+                programName="COSGN00C"
+                title={translation.headerTitle}
+                subtitle={translation.headerSubtitle}
+                showNavigation={false}
+              />
+            </Box>
+
+            <Box
               sx={{
-                minWidth: 150,
-                backgroundColor: alpha(theme.palette.background.paper, 0.9),
-                borderRadius: 1,
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: alpha(theme.palette.divider, 0.3),
-                },
+                display: 'flex',
+                flexDirection: { xs: 'column', md: 'row' },
+                justifyContent: 'flex-end',
+                alignItems: { xs: 'stretch', md: 'center' },
+                gap: 1.5,
+                width: { xs: '100%', md: 'auto' },
+                mt: { xs: 1.5, md: 0 },
               }}
             >
-              <InputLabel>{translation.languageLabel}</InputLabel>
-              <Select
-                value={language}
-                label={translation.languageLabel}
-                onChange={(event) =>
-                  setLanguage(event.target.value as LoginLanguageCode)
-                }
-              >
-                {languageOptions.map(option => (
-                  <MenuItem key={option.code} value={option.code}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-
-            <Tooltip title={translation.docTooltip} arrow>
-              <IconButton
-                onClick={handleOpenDocs}
+              <FormControl
                 size="small"
+                variant="outlined"
                 sx={{
-                  color: 'text.secondary',
-                  backgroundColor: alpha(theme.palette.background.paper, 0.8),
-                  backdropFilter: 'blur(4px)',
-                  border: `1px solid ${alpha(theme.palette.divider, 0.3)}`,
-                  '&:hover': {
-                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                    color: 'primary.main',
-                    borderColor: 'primary.main',
+                  width: { xs: '100%', sm: 'auto' },
+                  minWidth: 150,
+                  backgroundColor: alpha(theme.palette.background.paper, 0.9),
+                  borderRadius: 1,
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: alpha(theme.palette.divider, 0.3),
                   },
-                  transition: 'all 0.2s ease-in-out',
                 }}
               >
-                <MenuBook fontSize="small" />
-              </IconButton>
-            </Tooltip>
+                <InputLabel>{translation.languageLabel}</InputLabel>
+                <Select
+                  value={language}
+                  label={translation.languageLabel}
+                  onChange={(event) =>
+                    setLanguage(event.target.value as LoginLanguageCode)
+                  }
+                >
+                  {languageOptions.map(option => (
+                    <MenuItem key={option.code} value={option.code}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              <Tooltip title={translation.docTooltip} arrow>
+                <IconButton
+                  onClick={handleOpenDocs}
+                  size="small"
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    color: 'text.secondary',
+                    backgroundColor: alpha(theme.palette.background.paper, 0.8),
+                    backdropFilter: 'blur(4px)',
+                    border: `1px solid ${alpha(theme.palette.divider, 0.3)}`,
+                    '&:hover': {
+                      backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                      color: 'primary.main',
+                      borderColor: 'primary.main',
+                    },
+                    transition: 'all 0.2s ease-in-out',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    p: 0,
+                  }}
+                >
+                  <MenuBook fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
-        </Box>
 
         <Paper
           elevation={3}
