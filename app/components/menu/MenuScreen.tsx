@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Container,
   Box,
@@ -51,6 +51,38 @@ export function MenuScreen({
   const navigate = useNavigate();
   const [selectedInput, setSelectedInput] = useState('');
   const [hoveredOption, setHoveredOption] = useState<string | null>(null);
+  const headerRef = useRef<HTMLDivElement | null>(null);
+  const footerRef = useRef<HTMLDivElement | null>(null);
+  const [viewportHeight, setViewportHeight] = useState(() =>
+    typeof window !== 'undefined' ? window.innerHeight : 0
+  );
+  const [layoutHeights, setLayoutHeights] = useState({ header: 0, footer: 0 });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const measure = () => {
+      const headerEl = headerRef.current;
+      const footerEl = footerRef.current;
+      const headerStyles = headerEl ? window.getComputedStyle(headerEl) : null;
+      const footerStyles = footerEl ? window.getComputedStyle(footerEl) : null;
+
+      const headerHeight = headerEl?.offsetHeight ?? 0;
+      const footerHeight = footerEl?.offsetHeight ?? 0;
+      const headerMargin = headerStyles ? parseFloat(headerStyles.marginBottom) || 0 : 0;
+      const footerMargin = footerStyles ? parseFloat(footerStyles.marginTop) || 0 : 0;
+
+      setLayoutHeights({
+        header: headerHeight + headerMargin,
+        footer: footerHeight + footerMargin,
+      });
+      setViewportHeight(window.innerHeight);
+    };
+
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
 
   const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -92,199 +124,244 @@ export function MenuScreen({
     }
   }, [onExit, dispatch, navigate]);
 
-  return (
-    <Container maxWidth="lg" sx={{ py: 3 }}>
-      <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
-          transactionId={menuData.transactionId}
-          programName={menuData.programName}
-          title={menuData.title}
-          subtitle={menuData.subtitle || undefined}
-        />
+  const viewportIsShort = viewportHeight > 0 && viewportHeight < 720;
+  const reservedSpace = Math.max(layoutHeights.header + layoutHeights.footer + 40, 0);
+  const scrollMaxHeight = `calc(100vh - ${reservedSpace}px)`;
 
+  return (
+    <Container
+      maxWidth="lg"
+      sx={{
+        width: '100%',
+        px: { xs: 1.5, sm: 2.5, md: 3.5 },
+        py: { xs: 2, sm: 3 },
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <Box
+        onKeyDown={handleKeyDown}
+        tabIndex={-1}
+        sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+        }}
+      >
         <Paper
           elevation={2}
           sx={{
             borderRadius: 3,
             overflow: 'hidden',
             background: `linear-gradient(145deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.default, 0.1)})`,
+            display: 'flex',
+            flexDirection: 'column',
+            flex: 1,
+            minHeight: 0,
           }}
         >
-          {/* Menu Title */}
           <Box
+            ref={headerRef}
             sx={{
-              p: 3,
-              textAlign: 'center',
-              background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              color: 'white',
+              '& > .MuiPaper-root': { mb: 0 },
+              pb: { xs: 2.5, md: 3 },
             }}
           >
-            <Typography variant="h5" fontWeight={600}>
-              {menuData.title.includes('Admin') ? (
-                <AdminPanelSettings sx={{ mr: 1, verticalAlign: 'middle' }} />
-              ) : (
-                <Dashboard sx={{ mr: 1, verticalAlign: 'middle' }} />
-              )}
-              Select an Option
-            </Typography>
+            <SystemHeader
+              transactionId={menuData.transactionId}
+              programName={menuData.programName}
+              title={menuData.title}
+              subtitle={menuData.subtitle || undefined}
+            />
           </Box>
 
-          {/* Options List */}
-          <Box sx={{ p: 3 }}>
-            <List sx={{ mb: 3 }}>
-              {menuData.options.map((option, index) => (
-                <ListItem key={option.id} disablePadding sx={{ mb: 1 }}>
-                  <ListItemButton
-                    onClick={() => handleOptionClick(option)}
-                    disabled={option.disabled || loading}
-                    onMouseEnter={() => setHoveredOption(option.id)}
-                    onMouseLeave={() => setHoveredOption(null)}
-                    sx={{
-                      borderRadius: 2,
-                      py: 1.5,
-                      px: 2,
-                      transition: 'all 0.2s ease-in-out',
-                      border: `1px solid ${theme.palette.divider}`,
-                      '&:hover': {
-                        transform: 'translateX(8px)',
-                        boxShadow: theme.shadows[4],
-                        bgcolor: alpha(theme.palette.primary.main, 0.08),
-                      },
-                      '&.Mui-disabled': {
-                        opacity: 0.5,
-                        bgcolor: alpha(theme.palette.grey[500], 0.1),
-                      },
-                    }}
-                  >
-                    <ListItemIcon sx={{ minWidth: 40 }}>
-                      <Chip
-                        label={index + 1}
-                        size="small"
-                        color={hoveredOption === option.id ? 'primary' : 'default'}
-                        sx={{
-                          fontWeight: 600,
-                          minWidth: 28,
-                          height: 28,
-                        }}
-                      />
-                    </ListItemIcon>
-                    
-                    <ListItemText
-                      primary={option.label}
-                      secondary={option.description}
-                      primaryTypographyProps={{
-                        fontWeight: 500,
-                        color: option.disabled ? 'text.disabled' : 'text.primary',
-                      }}
-                      secondaryTypographyProps={{
-                        fontSize: '0.875rem',
-                        color: option.disabled ? 'text.disabled' : 'text.secondary',
-                      }}
-                    />
-                    
-                    {option.adminOnly && (
-                      <Chip
-                        label="Admin"
-                        size="small"
-                        color="warning"
-                        variant="outlined"
-                        sx={{ mr: 1 }}
-                      />
-                    )}
-                    
-                    <ArrowForwardIos
-                      sx={{
-                        fontSize: 16,
-                        color: option.disabled ? 'text.disabled' : 'action.active',
-                        opacity: hoveredOption === option.id ? 1 : 0.5,
-                        transition: 'opacity 0.2s',
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-
-            <Divider sx={{ my: 3 }} />
-
-            {/* Manual Input */}
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              flex: 1,
+              minHeight: 0,
+            }}
+          >
             <Box
-              component="form"
-              onSubmit={handleSubmit}
               sx={{
+                px: { xs: 2, md: 3 },
+                py: { xs: 2, md: 3 },
                 display: 'flex',
-                alignItems: 'center',
-                gap: 2,
-                justifyContent: 'center',
-                flexWrap: 'wrap',
+                flexDirection: 'column',
+                gap: 3,
+                flex: 1,
+                minHeight: 0,
               }}
             >
-              <Typography
-                variant="body1"
-                color="primary.main"
-                fontWeight={600}
-              >
-                Enter your selection:
-              </Typography>
-              
-              <TextField
-                value={selectedInput}
-                onChange={handleInputChange}
-                placeholder="01"
-                size="small"
-                disabled={loading}
-                inputProps={{
-                  maxLength: 2,
-                  style: { textAlign: 'center', fontSize: '1.1rem', fontWeight: 600 },
-                }}
+              <Box
                 sx={{
-                  width: 80,
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                    '&:hover': {
-                      '& .MuiOutlinedInput-notchedOutline': {
-                        borderColor: theme.palette.primary.main,
-                        borderWidth: 2,
+                  flex: 1,
+                  minHeight: 0,
+                  maxHeight: viewportIsShort ? scrollMaxHeight : 'none',
+                  overflowY: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 2,
+                }}
+              >
+                <List sx={{ width: '100%', m: 0 }}>
+                  {menuData.options.map((option, index) => (
+                    <ListItem key={option.id} disablePadding sx={{ mb: 1 }}>
+                      <ListItemButton
+                        onClick={() => handleOptionClick(option)}
+                        disabled={option.disabled || loading}
+                        onMouseEnter={() => setHoveredOption(option.id)}
+                        onMouseLeave={() => setHoveredOption(null)}
+                        sx={{
+                          borderRadius: 2,
+                          py: 1.5,
+                          px: 2,
+                          transition: 'all 0.2s ease-in-out',
+                          border: `1px solid ${theme.palette.divider}`,
+                          '&:hover': {
+                            transform: 'translateX(8px)',
+                            boxShadow: theme.shadows[4],
+                            bgcolor: alpha(theme.palette.primary.main, 0.08),
+                          },
+                          '&.Mui-disabled': {
+                            opacity: 0.5,
+                            bgcolor: alpha(theme.palette.grey[500], 0.1),
+                          },
+                        }}
+                      >
+                        <ListItemIcon sx={{ minWidth: 40 }}>
+                          <Chip
+                            label={index + 1}
+                            size="small"
+                            color={hoveredOption === option.id ? 'primary' : 'default'}
+                            sx={{
+                              fontWeight: 600,
+                              minWidth: 28,
+                              height: 28,
+                            }}
+                          />
+                        </ListItemIcon>
+
+                        <ListItemText
+                          primary={option.label}
+                          secondary={option.description}
+                          primaryTypographyProps={{
+                            fontWeight: 500,
+                            color: option.disabled ? 'text.disabled' : 'text.primary',
+                          }}
+                          secondaryTypographyProps={{
+                            fontSize: '0.875rem',
+                            color: option.disabled ? 'text.disabled' : 'text.secondary',
+                          }}
+                        />
+
+                        {option.adminOnly && (
+                          <Chip
+                            label="Admin"
+                            size="small"
+                            color="warning"
+                            variant="outlined"
+                            sx={{ mr: 1 }}
+                          />
+                        )}
+
+                        <ArrowForwardIos
+                          sx={{
+                            fontSize: 16,
+                            color: option.disabled ? 'text.disabled' : 'action.active',
+                            opacity: hoveredOption === option.id ? 1 : 0.5,
+                            transition: 'opacity 0.2s',
+                          }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Box>
+
+              <Divider sx={{ my: 0 }} />
+              {/* Manual Input */}
+              <Box
+                component="form"
+                onSubmit={handleSubmit}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  justifyContent: 'center',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  color="primary.main"
+                  fontWeight={600}
+                >
+                  Enter your selection:
+                </Typography>
+
+                <TextField
+                  value={selectedInput}
+                  onChange={handleInputChange}
+                  placeholder="01"
+                  size="small"
+                  disabled={loading}
+                  inputProps={{
+                    maxLength: 2,
+                    style: { textAlign: 'center', fontSize: '1.1rem', fontWeight: 600 },
+                  }}
+                  sx={{
+                    width: 80,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                      '&:hover': {
+                        '& .MuiOutlinedInput-notchedOutline': {
+                          borderColor: theme.palette.primary.main,
+                          borderWidth: 2,
+                        },
                       },
                     },
-                  },
-                }}
-              />
-              
-              <Button
-                type="submit"
-                variant="contained"
-                disabled={!selectedInput || loading}
-                startIcon={<KeyboardReturn />}
-                sx={{
-                  borderRadius: 2,
-                  px: 3,
-                  fontWeight: 600,
-                }}
-              >
-                Continue
-              </Button>
-            </Box>
+                  }}
+                />
 
-            {/* Error Display */}
-            {error && (
-              <Alert
-                severity="error"
-                sx={{
-                  mt: 3,
-                  borderRadius: 2,
-                  '& .MuiAlert-message': {
-                    fontWeight: 500,
-                  },
-                }}
-              >
-                {error}
-              </Alert>
-            )}
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={!selectedInput || loading}
+                  startIcon={<KeyboardReturn />}
+                  sx={{
+                    borderRadius: 2,
+                    px: 3,
+                    fontWeight: 600,
+                  }}
+                >
+                  Continue
+                </Button>
+              </Box>
+
+              {/* Error Display */}
+              {error && (
+                <Alert
+                  severity="error"
+                  sx={{
+                    mt: 3,
+                    borderRadius: 2,
+                    '& .MuiAlert-message': {
+                      fontWeight: 500,
+                    },
+                  }}
+                >
+                  {error}
+                </Alert>
+              )}
+            </Box>
           </Box>
 
-          {/* Footer */}
           <Box
+            ref={footerRef}
             sx={{
               p: 2,
               bgcolor: alpha(theme.palette.grey[100], 0.5),
@@ -302,7 +379,7 @@ export function MenuScreen({
                 <KeyboardReturn sx={{ fontSize: 16, mr: 0.5, verticalAlign: 'middle' }} />
                 ENTER = Continue
               </Typography>
-              
+
               <Button
                 variant="outlined"
                 size="small"
