@@ -16,6 +16,7 @@ import {
   Chip,
   Stack,
   useTheme,
+  useMediaQuery,
   alpha,
 } from '@mui/material';
 import {
@@ -47,6 +48,7 @@ export function MenuScreen({
   loading = false,
 }: MenuScreenProps) {
   const theme = useTheme();
+  const isWideViewport = useMediaQuery('(min-width:1360px)');
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [selectedInput, setSelectedInput] = useState('');
@@ -167,8 +169,9 @@ export function MenuScreen({
 
   const listHeightLimit = viewportHeight - headerHeight - footerHeight - 40;
   const adjustedListHeight = Math.max(listHeightLimit, 0);
-  const listMaxHeight =
+  const baseListMaxHeight =
     shouldCapList && adjustedListHeight > 0 ? `${adjustedListHeight}px` : undefined;
+  const listMaxHeight = isWideViewport ? '80vh' : baseListMaxHeight;
 
   return (
     <Container
@@ -271,15 +274,24 @@ export function MenuScreen({
                   },
                 }}
               >
-                <List sx={{ mb: 0 }}>
+                <List
+                  sx={{
+                    mb: 0,
+                    display: 'grid',
+                    gridTemplateColumns: isWideViewport ? 'repeat(2, minmax(0, 1fr))' : '1fr',
+                    columnGap: isWideViewport ? '16px' : 0,
+                    rowGap: isWideViewport ? '12px' : '8px',
+                  }}
+                >
                   {menuData.options.map((option, index) => (
-                    <ListItem key={option.id} disablePadding sx={{ mb: 1 }}>
+                    <ListItem key={option.id} disablePadding sx={{ width: '100%' }}>
                       <ListItemButton
                         onClick={() => handleOptionClick(option)}
                         disabled={option.disabled || loading}
                         onMouseEnter={() => setHoveredOption(option.id)}
                         onMouseLeave={() => setHoveredOption(null)}
                         sx={{
+                          width: '100%',
                           borderRadius: 2,
                           py: 1.5,
                           px: 2,
