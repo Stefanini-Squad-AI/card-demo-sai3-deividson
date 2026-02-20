@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👤 USER - Guía de Desarrollo de User Stories</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .header {
+            background: linear-gradient(135deg, #7b68ee 0%, #ffb347 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            margin-bottom: 0.3rem;
+        }
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        h2 {
+            color: #7b68ee;
+            margin-bottom: 1.2rem;
+            font-size: 1.8rem;
+            border-bottom: 3px solid #7b68ee;
+            padding-bottom: 0.5rem;
+        }
+        h3 {
+            color: #5552a3;
+            margin: 1.4rem 0 0.8rem;
+            font-size: 1.4rem;
+        }
+        .overview ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        .overview li {
+            margin-bottom: 0.6rem;
+        }
+        .us-template {
+            background: #f7f5ff;
+            border-left: 4px solid #7b68ee;
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 1.2rem;
+        }
+        .us-template strong {
+            display: block;
+            color: #7b68ee;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+        .us-template p {
+            margin-bottom: 0.6rem;
+            font-style: italic;
+        }
+        .us-template ul {
+            margin-left: 1rem;
+        }
+        .complexity-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+        .simple {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .medium {
+            background: #fef3c7;
+            color: #7c2d12;
+        }
+        .complex {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        .component-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1.4rem;
+            margin: 1rem 0;
+        }
+        .component-card h4 {
+            margin-top: 0;
+            color: #7b68ee;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+        .highlight {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.8rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        th {
+            background: #f1f5f9;
+            color: #7b68ee;
+            font-weight: 700;
+        }
+        .back-link {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #7b68ee;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .back-link:hover {
+            background: #5c4dd2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>👤 USER - Administración de Usuarios</h1>
+            <p>Guía técnica para escribir User Stories que tocan la administración back-office y de administradores.</p>
+        </header>
+
+        <section class="overview">
+            <h2>📋 Vista General</h2>
+            <p><strong>Propósito:</strong> Permitir que administradores y back-office gestionen usuarios del sistema con las mismas teclas de función y reglas que los programas legacy COBOL para COUSRxx.</p>
+            <p><strong>Contexto de Negocio:</strong> Todos los accesos a módulos sensibles pasan por este módulo; sólo los administradores pueden crear, editar o eliminar usuarios que operan en el sistema.</p>
+            <ul>
+                <li><code>/app/components/user/UserListScreen.tsx</code> – Tabla con búsqueda, paginación manual y selección tipo mainframe (F7, F8, ENTER).</li>
+                <li><code>/app/components/user/UserAddScreen.tsx</code>, <code>UserUpdateScreen.tsx</code>, <code>UserDeleteScreen.tsx</code> – Formularios tipo transacción con <code>SystemHeader</code> y manejo de teclas F3,F4,F5,F12.</li>
+                <li><code>/app/hooks/useUserList.{ts,tsx}</code>, <code>useUserAdd.ts</code>, <code>useUserUpdate.ts</code>, <code>useUserDelete.ts</code> – Lógica de negocio, validaciones, navegación protegida y consumo de APIs/mocks.</li>
+                <li><code>/app/services/userApi.ts</code> – Adaptador que encapsula los endpoints reales (<code>/users/*</code>) y los mapea a la interfaz esperada por los hooks.</li>
+                <li><code>/app/types/user*.ts</code> – Tipos compartidos, normalización de <code>userType</code> y contratos de request/response.</li>
+                <li><code>/app/mocks/user*.ts</code> – Handlers MSW (list, add, update, delete) que permiten desarrollo offline cuando <code>VITE_USE_MOCKS=true</code>.</li>
+            </ul>
+        </section>
+
+        <section class="us-guide">
+            <h2>🎯 Guía de Desarrollo de User Stories</h2>
+
+            <h3>📝 Plantillas Específicas de US</h3>
+            <div class="us-template">
+                <strong>Listado y selección rápida</strong>
+                <p>Como <em>analista back-office</em>, quiero <em>ver la lista paginada de usuarios y seleccionar una fila con ENTER/F7/F8</em> para <em>abrir la pantalla de actualización o baja sin recordar URLs</em>.</p>
+                <ul>
+                    <li>El listado muestra 10 registros por página con paginación manual (F7 para anterior, F8 para siguiente).</li>
+                    <li>El campo de búsqueda acepta <code>userId</code> y dispara <code>handleSearch</code> al presionar Enter.</li>
+                    <li>Si se selecciona acción (<code>U</code> o <code>D</code>) via dropdown, al presionar Enter se invoca <code>handleUserAction</code> y se redirige.</li>
+                    <li>F3 sale hacia <code>/menu/admin</code>; ESC y F12 hacen lo mismo.</li>
+                </ul>
+                <span class="complexity-badge simple">Simple (1-2 pts)</span>
+            </div>
+
+            <div class="us-template">
+                <strong>Alta de usuario</strong>
+                <p>Como <em>administrador</em>, quiero <em>agregar un usuario nuevo con nombre, userId, password y tipo</em> para <em>dar acceso inmediato a nuevos empleados</em>.</p>
+                <ul>
+                    <li>Fields: firstName/lastName (20 caracteres), userId/password (8 caracteres y todo en mayúsculas).</li>
+                    <li>Validaciones manuales en <code>useUserAdd</code> replican reglas de negocio (campos obligatorios, longitud máxima, userType 'A' o 'U').</li>
+                    <li>F3 = regresar al menú admin, F4 = limpiar formulario, F12 = salir del módulo.</li>
+                    <li>Al guardar, se consume <code>UserApiAdapter.createUser</code> y se limpian estados si el backend reporta éxito.</li>
+                </ul>
+                <span class="complexity-badge medium">Medio (3-4 pts)</span>
+            </div>
+
+            <div class="us-template">
+                <strong>Actualización segura</strong>
+                <p>Como <em>administrador</em>, quiero <em>traer datos de un userId, modificar campos y guardar con F5 o guardar y salir con F3</em> para <em>mantener roles y contraseñas alineados</em>.</p>
+                <ul>
+                    <li>Botón Fetch usa <code>UserApiAdapter.getUserById</code>; campo de <code>userId</code> en mayúsculas.</li>
+                    <li>La pantalla muestra mensajes informativos (F5 = guardar, F3 = guardar & salir, F4 = limpiar, F12/Escape = salir).</li>
+                    <li>No se habilita el botón de guardado hasta que hay cambios reales (<code>hasChanges</code>). password debe tener 8 caracteres exactos.</li>
+                    <li>Después de guardar, el hook muestra un mensaje de éxito y refresca la lista si corresponde.</li>
+                </ul>
+                <span class="complexity-badge medium">Medio (3-5 pts)</span>
+            </div>
+
+            <div class="us-template">
+                <strong>Baja con confirmación</strong>
+                <p>Como <em>administrador de seguridad</em>, quiero <em>buscar a un usuario y confirmarlo antes de eliminarlo con una ventana modal</em> para <em>evitar bajas accidentales</em>.</p>
+                <ul>
+                    <li>Fetch y validación idéntica a update; se activa modal de confirmación antes de llamar <code>onDelete</code>.</li>
+                    <li>F5 abre el diálogo, F4 limpia, F12/Escape/F3 salen hacia la lista.</li>
+                    <li>El hook <code>useUserDelete</code> resetea estados cuando la eliminación es exitosa.</li>
+                </ul>
+                <span class="complexity-badge medium">Medio (3-4 pts)</span>
+            </div>
+
+            <h3>⚡ Factores de Aceleración</h3>
+            <div class="component-card">
+                <h4>🏁 useUserList hook</h4>
+                <p>Gestiona búsqueda, paginación manual y selección (U/D) como en el legacy COBOL. Usa <code>useApi</code> + <code>UserApiAdapter</code> para cambiar entre mocks y backend real sin tocar la UI.</p>
+                <p>Puntos clave:</p>
+                <ul>
+                    <li>F7/F8 cambian página y validan límites.</li>
+                    <li><code>handleEnterKey</code> procesa la primera selección.</li>
+                    <li><code>handleExit</code> regresa a <code>/menu/admin</code>.</li>
+                </ul>
+            </div>
+            <div class="component-card">
+                <h4>🧪 useUserAdd hook</h4>
+                <p>Incluye validación de formularios, automatismos (uppercase, longitud) y funciones auxiliares para F3/F4/F12.</p>
+                <p>Permite reutilizar el mismo formulario para escenarios de prueba sin reescribir lógica de validación ni navegaciones.</p>
+            </div>
+            <div class="component-card">
+                <h4>🔗 UserApiAdapter</h4>
+                <p>Adapta los contratos del backend real (/users/list, /users/{id}) al shape que esperan los hooks. Traduce userType 'R' a 'U', calcula paginación y valida redirects para selección.</p>
+            </div>
+            <div class="component-card">
+                <h4>🧾 MSW mocks</h4>
+                <p>Los handlers <code>userListHandlers.ts</code>, <code>userAddHandlers.ts</code>, <code>userUpdateHandlers.ts</code> y <code>userDeleteHandlers.ts</code> permiten ejecutar cada historia con datos reproducibles cuando <code>VITE_USE_MOCKS=true</code>.</p>
+            </div>
+
+            <h3>📊 Guía de Complejidad</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Complejidad</th>
+                        <th>Puntos</th>
+                        <th>Ejemplos en USER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="complexity-badge simple">Simple</span></td>
+                        <td>1-2 pts</td>
+                        <td>Modificar etiquetas de tabla, ajustar mensajes de error, cambiar color de chips (Admin/User).</td>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge medium">Medio</span></td>
+                        <td>3-5 pts</td>
+                        <td>Agregar nuevos campos al formulario de alta, validar reglas extra de password, integrar nuevo endpoint de auditoría.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge complex">Complejo</span></td>
+                        <td>5-8 pts</td>
+                        <td>Conectar con backend real para selección de usuarios (UserApiAdapter), implementar versiones multi-idioma y reporte de actividades.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="technical">
+            <h2>🔧 Fundamentos Técnicos</h2>
+            <h3>🏗️ Componentes clave</h3>
+            <div class="component-card">
+                <h4>UserListScreen.tsx</h4>
+                <p>Tabla MUI con <code>Select</code> por fila, chips de roles, paginación manual y alertas.</p>
+                <p>Escucha <code>onKeyDown</code> para enviar ENTER, F3/F8 y extrae acciones a <code>onUserAction</code>.</p>
+            </div>
+            <div class="component-card">
+                <h4>UserAdd/Update/Delete Screens</h4>
+                <p>Formularios con <code>SystemHeader</code>, target path (COUSR01C–CU03), tokens de tecla y <code>LoadingSpinner</code> para estados de mutation.</p>
+            </div>
+            <div class="component-card">
+                <h4>Hooks (useUserList, useUserAdd, useUserUpdate, useUserDelete)</h4>
+                <p>Usan <code>useApi</code>/<code>useMutation</code> para separar UI de lógica. Cada hook gestiona mensajes, validaciones y navegación (F3=Back, F4=Clear, F5=Save).</p>
+            </div>
+            <div class="component-card">
+                <h4>UserApiAdapter + apiClient</h4>
+                <p>Hace fetch hacia <code>/users/list</code>, <code>/users/{id}</code>, <code>/users</code>, <code>/users/{id}</code> (PUT/DELETE) y luego normaliza la respuesta.</p>
+            </div>
+
+            <h3>🔗 Dependencias</h3>
+            <ul>
+                <li><strong>Auth Module:</strong> Solo usuarios autenticados con rol <code>admin</code> pueden entrar en <code>UserAddPage</code>.</li>
+                <li><strong>Layout/SystemHeader:</strong> Inyecta transactionId (COUSR01C) y contextualiza cada vista.</li>
+                <li><strong>LoadingSpinner + Alert:</strong> Feedback de operaciones asíncronas.</li>
+                <li><strong>apiClient:</strong> Base URL configurable via <code>VITE_API_BASE_URL</code> y tokens de autenticación.</li>
+                <li><strong>MSW mocks:</strong> Habilita desarrollo sin backend real.</li>
+            </ul>
+
+            <h3>🌐 Interfaces Públicas</h3>
+            <pre class="code-block"><code>GET /api/users/list?pageNumber=1&direction=FORWARD
+Response (200):
+{
+  "success": true,
+  "data": {
+    "users": [
+      { "userId": "ADMIN001", "firstName": "System", "lastName": "Admin", "userType": "A" }
+    ],
+    "pagination": { "page": 1, "limit": 10, "total": 1, "totalPages": 1, "hasNext": false, "hasPrev": false }
+  }
+}
+</code></pre>
+            <pre class="code-block"><code>POST /api/users
+Request:
+{
+  "userId": "USER123",
+  "firstName": "New",
+  "lastName": "Operator",
+  "password": "PASS1234",
+  "userType": "U"
+}
+Response (201):
+{
+  "success": true,
+  "data": {
+    "message": "User created successfully"
+  }
+}
+</code></pre>
+            <p>Los PUT y DELETE usan rutas <code>/api/users/{userId}</code> con payloads similares y mensajes de estado para retroalimentación.</p>
+        </section>
+
+        <section class="rules">
+            <h2>📋 Reglas del Negocio</h2>
+            <div class="highlight">
+                <ul>
+                    <li><strong>User ID:</strong> Obligatorio, 8 caracteres máximo, convertido a mayúsculas y único en el sistema.</li>
+                    <li><strong>Password:</strong> 8 caracteres exactamente, obligatorio para update.</li>
+                    <li><strong>User Type:</strong> Solo <code>'A'</code> o <code>'U'</code>; las respuestas con <code>'R'</code> se normalizan a <code>'U'</code>.</li>
+                    <li><strong>Roles:</strong> Solo perfil admin puede llamar a <code>UserAddPage</code>/<code>UserUpdatePage</code>/<code>UserDeletePage</code>.</li>
+                    <li><strong>Sesión:</strong> F3 sale al menú admin, F12/Escape y ESC cancelan la operación actual.</li>
+                    <li><strong>Acción:</strong> Se requiere selección explícita <code>(U/D)</code> antes de navegar a update/delete.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="testing">
+            <h2>🧪 Testing y Datos de Prueba</h2>
+            <p>Todos los mocks viven en <code>/app/mocks/user*.ts</code>. Los handlers exponen:</p>
+            <ul>
+                <li><code>GET /api/users/security</code> – Lista simulada para <code>UserListScreen</code>.</li>
+                <li><code>POST /api/users/security</code> – Permite lanzar errores de validación en <code>UserAdd</code>.</li>
+                <li><code>PUT/DELETE /api/users/security/{id}</code> – Simula respuestas para update/delete.</li>
+            </ul>
+            <p>Desactivar mocks y apuntar al backend real es tan sencillo como <code>VITE_USE_MOCKS=false</code> y mantener sincronizado <code>UserApiAdapter</code>.</p>
+        </section>
+
+        <footer>
+            <p><a class="back-link" href="../../index.html">← Volver al Índice</a></p>
+            <p><em>Última actualización: 20 de febrero de 2026</em></p>
+            <p><em>Modulo USER • Documentación mantenida por el equipo DS3A</em></p>
+        </footer>
+    </div>
+</body>
+</html>
