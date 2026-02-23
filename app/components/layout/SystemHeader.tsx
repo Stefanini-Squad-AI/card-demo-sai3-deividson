@@ -6,6 +6,11 @@ import {
   Chip,
   Button,
   Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
   useTheme,
 } from '@mui/material';
 import {
@@ -14,12 +19,14 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '~/store/hooks';
-import { 
-  logoutUser, 
-  selectCurrentUser, 
-  selectIsAuthenticated 
+import {
+  logoutUser,
+  selectCurrentUser,
+  selectIsAuthenticated,
 } from '~/features/auth/authSlice';
 import { formatDate } from '~/utils';
+import { useLanguage } from '~/hooks/useLanguage';
+import type { LoginLanguageCode } from '~/data/locales/login';
 
 interface SystemHeaderProps {
   transactionId: string;
@@ -41,6 +48,7 @@ export function SystemHeader({
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectCurrentUser);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const { language, setLanguage, translation, languageOptions } = useLanguage();
   const currentDate = new Date();
 
   const handleHomeClick = () => {
@@ -130,6 +138,26 @@ export function SystemHeader({
                 variant="filled"
                 sx={{ bgcolor: 'success.main', color: 'success.contrastText' }}
               />
+              <FormControl size="small" sx={{ minWidth: 140 }}>
+                <InputLabel id="global-language-select-label">
+                  {translation.languageLabel}
+                </InputLabel>
+                <Select
+                  labelId="global-language-select-label"
+                  id="global-language-select"
+                  value={language}
+                  label={translation.languageLabel}
+                  onChange={(event: SelectChangeEvent<LoginLanguageCode>) => {
+                    setLanguage(event.target.value as LoginLanguageCode);
+                  }}
+                >
+                  {languageOptions.map(option => (
+                    <MenuItem key={option.code} value={option.code}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               
               {/* Solo mostrar botones si está autenticado */}
               {shouldShowNavigation && (
