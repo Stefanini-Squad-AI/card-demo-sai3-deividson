@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 import {
   loginLanguageOptions,
   loginTranslations,
@@ -28,29 +28,59 @@ const readStoredLanguage = (fallback: LoginLanguageCode): LoginLanguageCode => {
   return fallback;
 };
 
+const listeners = new Set<() => void>();
+let cachedLanguage: LoginLanguageCode | null = null;
+
+const ensureLanguage = (initial?: LoginLanguageCode) => {
+  if (cachedLanguage) {
+    return cachedLanguage;
+  }
+
+  cachedLanguage = readStoredLanguage(initial ?? DEFAULT_LANGUAGE);
+  return cachedLanguage;
+};
+
+const persistLanguage = (language: LoginLanguageCode) => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(STORAGE_KEY, language);
+  } catch (error) {
+    console.warn('Unable to persist login language preference', error);
+  }
+};
+
+const notifyListeners = () => {
+  listeners.forEach(listener => listener());
+};
+
 export function useLanguage(initialLanguage?: LoginLanguageCode) {
-  const [language, setLanguageState] = useState<LoginLanguageCode>(() =>
-    readStoredLanguage(initialLanguage ?? DEFAULT_LANGUAGE)
+  ensureLanguage(initialLanguage);
+
+  const subscribe = useCallback((callback: () => void) => {
+    listeners.add(callback);
+    return () => {
+      listeners.delete(callback);
+    };
+  }, []);
+
+  const language = useSyncExternalStore(
+    subscribe,
+    () => cachedLanguage ?? ensureLanguage(initialLanguage),
+    () => DEFAULT_LANGUAGE
   );
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    try {
-      window.localStorage.setItem(STORAGE_KEY, language);
-    } catch (error) {
-      console.warn('Unable to persist login language preference', error);
-    }
-  }, [language]);
-
   const setLanguage = useCallback((nextLanguage: LoginLanguageCode) => {
-    if (nextLanguage === language) {
+    if (nextLanguage === cachedLanguage) {
       return;
     }
-    setLanguageState(nextLanguage);
-  }, [language]);
+
+    cachedLanguage = nextLanguage;
+    persistLanguage(nextLanguage);
+    notifyListeners();
+  }, []);
 
   const translation = useMemo(
     () => loginTranslations[language],
