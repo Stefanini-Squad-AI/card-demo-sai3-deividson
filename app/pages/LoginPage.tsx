@@ -298,21 +298,34 @@ export default function LoginPage() {
             background: `linear-gradient(145deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.default, 0.1)})`,
             width: 'clamp(320px, 90vw, 1100px)',
             mx: 'auto',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'stretch',
+            px: { xs: 2, sm: 3, md: 4 },
+            '@media (min-width:1280px)': {
+              px: theme.spacing(6),
+            },
           }}
         >
           <Box
             sx={{
+              width: '100%',
               display: 'flex',
-              flexDirection: { xs: 'column', lg: 'row' },
-              alignItems: 'stretch',
-              gap: { xs: 0, lg: 4 },
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: theme.spacing(3),
+              '@media (min-width:1024px)': {
+                flexDirection: 'row',
+                alignItems: 'stretch',
+                gap: theme.spacing(4),
+              },
             }}
-          >
+            >
             <Box
               sx={{
-                flex: { xs: '1 1 auto', lg: '1 1 50%' },
-                minWidth: { lg: 0 },
-                maxWidth: { lg: '55%' },
+                flex: '1 1 100%',
+                minWidth: 0,
+                maxWidth: '100%',
                 p: { xs: 3, md: 4 },
                 background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                 color: 'white',
@@ -321,6 +334,10 @@ export default function LoginPage() {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
+                '@media (min-width:1024px)': {
+                  flex: '1 1 55%',
+                  maxWidth: '55%',
+                },
               }}
             >
               <Box
@@ -394,11 +411,15 @@ export default function LoginPage() {
               component="form"
               onSubmit={handleSubmit}
               sx={{
-                flex: { xs: '1 1 auto', lg: '1 1 50%' },
-                minWidth: { lg: 0 },
-                maxWidth: { lg: '55%' },
+                flex: '1 1 100%',
+                minWidth: 0,
+                maxWidth: '100%',
                 py: { xs: 3, md: 4 },
                 px: { xs: 3, md: 4 },
+                '@media (min-width:1024px)': {
+                  flex: '1 1 45%',
+                  maxWidth: '45%',
+                },
               }}
             >
               <Typography
