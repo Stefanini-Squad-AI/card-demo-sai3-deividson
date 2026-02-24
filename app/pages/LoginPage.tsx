@@ -555,6 +555,14 @@ export default function LoginPage() {
                 >
                   {isLoading ? translation.buttonLoading : translation.buttonLabel}
                 </Button>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  textAlign="center"
+                >
+                  {translation.footerText}
+                </Typography>
               </Stack>
 
               <Divider sx={{ my: 3 }} />
@@ -587,18 +595,6 @@ export default function LoginPage() {
             </Box>
           </Box>
 
-          <Box
-            sx={{
-              p: 2,
-              bgcolor: alpha(theme.palette.grey[100], 0.5),
-              borderTop: `1px solid ${theme.palette.divider}`,
-              textAlign: 'center',
-            }}
-          >
-            <Typography variant="body2" color="text.secondary">
-              {translation.footerText}
-            </Typography>
-          </Box>
         </Paper>
       </Box>
     </Container>
