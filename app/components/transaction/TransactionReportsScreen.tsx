@@ -39,7 +39,7 @@ import {
   Close,
   Print,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { TransactionReportTable } from './TransactionReportTable';
 import { useTransactionReports } from '~/hooks/useTransactionReports';
 
@@ -144,7 +144,7 @@ export function TransactionReportsScreen({
 
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
-      <SystemHeader
+      <GlobalHeader
         transactionId="CR00"
         programName="CORPT00C"
         title="CardDemo - Transaction Reports"

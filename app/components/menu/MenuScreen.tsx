@@ -26,7 +26,7 @@ import {
   AdminPanelSettings,
   Dashboard,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { useAppDispatch } from '~/store/hooks';
 import { logoutUser } from '~/features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
@@ -194,7 +194,7 @@ export function MenuScreen({
         }}
       >
         <Box ref={headerRef}>
-          <SystemHeader
+          <GlobalHeader
             transactionId={menuData.transactionId}
             programName={menuData.programName}
             title={menuData.title}

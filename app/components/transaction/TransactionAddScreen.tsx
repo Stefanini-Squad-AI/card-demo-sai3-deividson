@@ -43,7 +43,7 @@ import {
   AutoFixHigh,
   DataObject,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { useTransactionAdd } from '~/hooks/useTransactionAdd';
 import type { TransactionAddRequest } from '~/types/transactionAdd';
 
@@ -267,7 +267,7 @@ export function TransactionAddScreen({ onSuccess, onError }: TransactionAddScree
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CT02"
           programName="COTRN02C"
           title="Add Transaction"

@@ -32,7 +32,7 @@ import {
   LocationCity as CityIcon,
   Category as CategoryIcon,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { useTransactionView } from '~/hooks/useTransactionView';
 
 interface TransactionViewScreenProps {
@@ -122,7 +122,7 @@ export function TransactionViewScreen({
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CT01"
           programName="COTRN01C"
           title="View Transaction"

@@ -46,7 +46,7 @@ import {
   CreditScore,
   ContactPhone,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { LoadingSpinner } from '~/components/ui/LoadingSpinner';
 import type { AccountUpdateRequest, AccountUpdateData } from '~/types/accountUpdate';
 
@@ -215,7 +215,7 @@ export function AccountUpdateScreen({
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CAUP"
           programName="COACTUPC"
           title="CardDemo - Account Update"

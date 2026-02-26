@@ -34,7 +34,7 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { useUserAdd } from '~/hooks/useUserAdd';
 import type { UserAddFormData } from '~/types/userAdd';
 
@@ -140,7 +140,7 @@ export function UserAddScreen({ onSuccess, onError }: UserAddScreenProps) {
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CU01"
           programName="COUSR01C"
           title="CardDemo - User Administration"
