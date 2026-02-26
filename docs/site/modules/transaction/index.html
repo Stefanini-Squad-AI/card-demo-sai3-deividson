@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💳 TRANSACTION - Guía de Desarrollo de User Stories</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.4rem;
+            margin-bottom: 0.3rem;
+        }
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        h2 {
+            color: #667eea;
+            margin-bottom: 1.2rem;
+            font-size: 1.8rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        h3 {
+            color: #5a67d8;
+            margin: 1.4rem 0 0.8rem;
+            font-size: 1.4rem;
+        }
+        .overview ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        .overview li {
+            margin-bottom: 0.6rem;
+        }
+        .us-template {
+            background: #f0f4ff;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            border-radius: 4px;
+            margin-bottom: 1.2rem;
+        }
+        .us-template strong {
+            display: block;
+            color: #667eea;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+        .us-template p {
+            margin-bottom: 0.6rem;
+            font-style: italic;
+        }
+        .us-template ul {
+            margin-left: 1rem;
+        }
+        .complexity-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+        .simple {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .medium {
+            background: #fef3c7;
+            color: #7c2d12;
+        }
+        .complex {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        .component-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1.4rem;
+            margin: 1rem 0;
+        }
+        .component-card h4 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+        .highlight {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 0.8rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.8rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+        th {
+            background: #f1f5f9;
+            color: #667eea;
+            font-weight: 700;
+        }
+        .back-link {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .back-link:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>💳 TRANSACTION - Administración de Transacciones</h1>
+            <p>Guía técnica para escribir User Stories que tocan la gestión de transacciones con tarjeta de crédito.</p>
+        </header>
+
+        <section class="overview">
+            <h2>📋 Vista General</h2>
+            <p><strong>Propósito:</strong> Permitir que operadores visualicen, registren, busquen y generen reportes de transacciones de tarjetas de crédito con las mismas teclas de función y reglas que los programas legacy COBOL para COTRNxx.</p>
+            <p><strong>Contexto de Negocio:</strong> Todas las operaciones con transacciones financieras pasan por este módulo; incluye listados, búsqueda individual, alta de nuevas transacciones y generación de reportes mensuales/anuales.</p>
+            <ul>
+                <li><code>/app/components/transaction/TransactionListScreen.tsx</code> – Tabla con búsqueda, paginación manual y selección tipo mainframe (F7, F8, ENTER) para ver detalles.</li>
+                <li><code>/app/components/transaction/TransactionViewScreen.tsx</code> – Pantalla de visualización detallada con información del comerciante, montos y fechas.</li>
+                <li><code>/app/components/transaction/TransactionAddScreen.tsx</code> – Formulario de alta con validaciones de monto, fechas, comerciante y confirmación.</li>
+                <li><code>/app/components/transaction/TransactionReportsScreen.tsx</code> – Interfaz para generación de reportes mensuales, anuales o personalizados con confirmación.</li>
+                <li><code>/app/components/transaction/TransactionReportTable.tsx</code> – Componente de visualización de reportes con agrupación por cuenta, totales y subtotales.</li>
+                <li><code>/app/hooks/useTransactionList.ts</code>, <code>useTransactionView.ts</code>, <code>useTransactionAdd.ts</code>, <code>useTransactionReports.ts</code> – Lógica de negocio, validaciones, navegación y consumo de APIs/mocks.</li>
+                <li><code>/app/types/transactionList.ts</code>, <code>transactionView.ts</code>, <code>transactionAdd.ts</code>, <code>transactionReports.ts</code> – Tipos compartidos y contratos de request/response.</li>
+                <li><code>/app/mocks/transactionListHandlers.ts</code>, <code>transactionViewHandlers.ts</code>, <code>transactionAddHandlers.ts</code>, <code>transactionReportsHandlers.ts</ Handlers MSW que permiten desarrollo offline cuando <code>VITE_USE_MOCKS=true</code>.</li>code> 
+                <li><code>/app/pages/TransactionListPage.tsx</code>, <code>TransactionViewPage.tsx</code>, <code>TransactionAddPage.tsx</code>, <code>TransactionReportsPage.tsx</code> – Páginas que envuelven los screens y manejan el routing.</li>
+            </ul>
+        </section>
+
+        <section class="us-guide">
+            <h2>🎯 Guía de Desarrollo de User Stories</h2>
+
+            <h3>📝 Plantillas Específicas de US</h3>
+            
+            <div class="us-template">
+                <strong>Listado y búsqueda de transacciones</strong>
+                <p>Como <em>operador de tarjetas</em>, quiero <em>ver el listado paginado de transacciones y buscar por ID</em> para <em>localizar rápidamente operaciones específicas y verificar montos</em>.</p>
+                <ul>
+                    <li>El listado muestra transacciones con ID, fecha (MM/DD/YY), descripción y monto formateado.</li>
+                    <li>Campo de búsqueda acepta Transaction ID numérico (máx. 16 caracteres) y dispara búsqueda con ENTER o botón.</li>
+                    <li>Paginación manual con F7 (página anterior) y F8 (página siguiente), validando límites.</li>
+                    <li>Selección por fila: escribir 'S' en campo de selección y presionar ENTER o ícono para ver detalles.</li>
+                    <li>F3 regresa al menú principal; los montos negativos se muestran en rojo, positivos en verde.</li>
+                </ul>
+                <span class="complexity-badge simple">Simple (1-2 pts)</span>
+            </div>
+
+            <div class="us-template">
+                <strong>Visualización de detalles de transacción</strong>
+                <p>Como <em>analista financiero</em>, quiero <em>buscar una transacción por ID y ver toda su información detallada</em> para <em>validar datos del comerciante, montos y fechas de procesamiento</em>.</p>
+                <ul>
+                    <li>Campo de búsqueda con Transaction ID (máx. 16 caracteres); búsqueda con ENTER o botón.</li>
+                    <li>Información básica: Transaction ID, Card Number, Type Code, Category Code, Source.</li>
+                    <li>Información financiera: Amount (formateado USD), Original Date, Processed Date.</li>
+                    <li>Información del comerciante: Merchant ID, Name, City, Zip Code con iconos visuales.</li>
+                    <li>F3 = volver, F4 = limpiar pantalla, F5 = ir a listado de transacciones.</li>
+                    <li>Soporte para carga inicial con <code>initialTransactionId</code> desde navegación previa.</li>
+                </ul>
+                <span class="complexity-badge simple">Simple (2-3 pts)</span>
+            </div>
+
+            <div class="us-template">
+                <strong>Alta de transacción nueva</strong>
+                <p>Como <em>operador de back-office</em>, quiero <em>registrar una nueva transacción ingresando cuenta/tarjeta, montos, comerciante y fechas con confirmación</em> para <em>mantener el registro actualizado de operaciones</em>.</p>
+                <ul>
+                    <li>Identificación: Account ID o Card Number (uno obligatorio), validación de formato.</li>
+                    <li>Datos de transacción: Type Code, Category Code, Source, Description (texto libre), Amount (formato decimal).</li>
+                    <li>Fechas: Original Date y Process Date en formato ISO o texto reconocible.</li>
+                    <li>Información de comerciante: Merchant ID, Name, City, Zip Code (todos obligatorios).</li>
+                    <li>Confirmación en dos pasos: formulario completo → pantalla de confirmación (Y/N) → guardado final.</li>
+                    <li>F3 = volver al menú, F4 = limpiar formulario, F12 = salir, validaciones en tiempo real.</li>
+                    <li>Mensajes de éxito/error claros; limpieza automática de formulario tras guardado exitoso.</li>
+                </ul>
+                <span class="complexity-badge complex">Complejo (5-7 pts)</span>
+            </div>
+
+            <div class="us-template">
+                <strong>Generación de reportes mensuales/anuales</strong>
+                <p>Como <em>gerente financiero</em>, quiero <em>generar reportes de transacciones por rango de fechas con confirmación</em> para <em>analizar patrones de gasto y generar informes ejecutivos</em>.</p>
+                <ul>
+                    <li>Selección de tipo de reporte: Monthly, Yearly, Custom con tabs visuales.</li>
+                    <li>Para Custom: Start Date y End Date con validaciones de formato y rango lógico.</li>
+                    <li>Confirmación antes de generar (Y/N); validación de campos obligatorios según tipo.</li>
+                    <li>Visualización de reporte: agrupación por Card Number y Account ID con subtotales por cuenta.</li>
+                    <li>Tabla detallada: Transaction ID, Type/Category (con descripciones), Amount, Processed Date.</li>
+                    <li>Totales: Account Total por grupo, Grand Total general, contadores de transacciones y cuentas.</li>
+                    <li>F3 = volver, F4 = limpiar, F5 = regenerar reporte, navegación fluida entre pestañas.</li>
+                </ul>
+                <span class="complexity-badge complex">Complejo (6-8 pts)</span>
+            </div>
+
+            <h3>⚡ Factores de Aceleración</h3>
+            
+            <div class="component-card">
+                <h4>🏁 useTransactionList hook</h4>
+                <p>Gestiona búsqueda, paginación manual (F7/F8) y selección de transacciones tipo mainframe con campo 'S'.</p>
+                <p>Puntos clave:</p>
+                <ul>
+                    <li><code>handleSearch</code>: Búsqueda por Transaction ID con validación numérica.</li>
+                    <li><code>handleNextPage/handlePreviousPage</code>: Navegación con control de límites y estados.</li>
+                    <li><code>handleTransactionSelect</code>: Procesa selección 'S' y navega a vista detallada.</li>
+                    <li><code>handleInitialLoad</code>: Carga inicial automática de la primera página.</li>
+                    <li>Formateo de montos con <code>Intl.NumberFormat</code> en USD; colores diferenciados por signo.</li>
+                </ul>
+            </div>
+
+            <div class="component-card">
+                <h4>🔍 useTransactionView hook</h4>
+                <p>Maneja búsqueda y visualización de detalles de transacción individual con navegación integrada.</p>
+                <p>Características:</p>
+                <ul>
+                    <li>Soporte para <code>initialTransactionId</code> desde navegación previa (desde lista).</li>
+                    <li><code>handleSearch</code>: Fetch de datos completos de transacción por ID.</li>
+                    <li><code>handleClearScreen</code>: Limpieza de datos y errores (F4).</li>
+                    <li><code>handleBrowseTransactions</code>: Navegación rápida a lista (F5).</li>
+                    <li>Formateo de fechas con <code>toLocaleString</code>; formateo de montos con símbolo USD.</li>
+                </ul>
+            </div>
+
+            <div class="component-card">
+                <h4>➕ useTransactionAdd hook</h4>
+                <p>Implementa flujo de alta de transacciones con validaciones complejas, confirmación en dos pasos y gestión de estado de formulario.</p>
+                <p>Validaciones incluidas:</p>
+                <ul>
+                    <li>Account ID o Card Number obligatorio (al menos uno).</li>
+                    <li>Transaction Type Code, Category Code, Source obligatorios.</li>
+                    <li>Amount: validación de formato decimal, no vacío.</li>
+                    <li>Merchant ID, Name, City, Zip obligatorios.</li>
+                    <li>Fechas: validación de formato y rango lógico.</li>
+                    <li>Confirmación: flujo de dos pasos con pantalla de revisión antes de guardar.</li>
+                </ul>
+            </div>
+
+            <div class="component-card">
+                <h4>📊 useTransactionReports hook</h4>
+                <p>Gestiona generación de reportes con múltiples tipos, validaciones de fechas y confirmación.</p>
+                <p>Funcionalidades:</p>
+                <ul>
+                    <li>Tres tipos de reporte: Monthly, Yearly, Custom con validaciones específicas.</li>
+                    <li>Validación de rangos de fechas para Custom (start ≤ end).</li>
+                    <li>Confirmación obligatoria antes de generar (Y/N).</li>
+                    <li>Gestión de estado de reporte: tipo, fechas, datos, visualización.</li>
+                    <li>Cálculos automáticos: subtotales por cuenta, grand total, contadores.</li>
+                </ul>
+            </div>
+
+            <div class="component-card">
+                <h4>📋 TransactionReportTable component</h4>
+                <p>Componente de visualización de reportes con agrupación, colores y totales calculados.</p>
+                <p>Características visuales:</p>
+                <ul>
+                    <li>Agrupación por Card Number y Account ID con encabezados destacados.</li>
+                    <li>Filas de detalle con Transaction ID, Type/Category descriptions, Amount, Date.</li>
+                    <li>Subtotales por cuenta con fondo resaltado.</li>
+                    <li>Grand Total al final con tipografía destacada.</li>
+                    <li>Formateo de montos con colores: verde para positivos, rojo para negativos.</li>
+                </ul>
+            </div>
+
+            <div class="component-card">
+                <h4>🧪 MSW Mocks</h4>
+                <p>Handlers completos para desarrollo offline y testing:</p>
+                <ul>
+                    <li><code>transactionListHandlers.ts</code>: Listado con paginación, búsqueda por ID, datos de prueba variados.</li>
+                    <li><code>transactionViewHandlers.ts</code>: Detalles completos de transacción con información de comerciante.</li>
+                    <li><code>transactionAddHandlers.ts</code>: Validación de campos, confirmación y respuesta exitosa con nuevo ID.</li>
+                    <li><code>transactionReportsHandlers.ts</code>: Generación de reportes con datos agrupados, totales y contadores.</li>
+                </ul>
+            </div>
+
+            <h3>📊 Guía de Complejidad</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Complejidad</th>
+                        <th>Puntos</th>
+                        <th>Ejemplos en TRANSACTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="complexity-badge simple">Simple</span></td>
+                        <td>1-2 pts</td>
+                        <td>Modificar formato de fecha en tabla, ajustar colores de montos, cambiar texto de botones o mensajes.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge medium">Medio</span></td>
+                        <td>3-5 pts</td>
+                        <td>Agregar campo de filtro por tipo de transacción, implementar exportación a CSV de lista, mejorar validaciones de formulario.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="complexity-badge complex">Complejo</span></td>
+                        <td>5-8 pts</td>
+                        <td>Implementar nuevo tipo de reporte con lógica de agrupación diferente, integrar backend real para transacciones, agregar módulo de conciliación.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="technical">
+            <h2>🔧 Fundamentos Técnicos</h2>
+            
+            <h3>🏗️ Componentes Clave</h3>
+            
+            <div class="component-card">
+                <h4>TransactionListScreen.tsx</h4>
+                <p><strong>Propósito:</strong> Tabla de transacciones con búsqueda, paginación manual y selección.</p>
+                <p><strong>Tecnologías:</strong> Material-UI (Table, TextField, Button, Chip), custom hooks.</p>
+                <p><strong>Props:</strong></p>
+                <ul>
+                    <li><code>onTransactionSelect?: (transactionId: string) => void</code> - Callback al seleccionar transacción.</li>
+                    <li><code>onError?: (error: string) => void</code> - Callback para errores.</li>
+                </ul>
+                <p><strong>Teclas de función:</strong></p>
+                <ul>
+                    <li>F3: Volver al menú principal.</li>
+                    <li>F7: Página anterior (si disponible).</li>
+                    <li>F8: Página siguiente (si disponible).</li>
+                    <li>ENTER: Procesar selección (campo 'S').</li>
+                </ul>
+            </div>
+
+            <div class="component-card">
+                <h4>TransactionViewScreen.tsx</h4>
+                <p><strong>Propósito:</strong> Vista detallada de una transacción individual.</p>
+                <p><strong>Tecnologías:</strong> Material-UI (Grid, Card, TextField), formateo de fechas y montos.</p>
+                <p><strong>Props:</strong></p>
+                <ul>
+                    <li><code>initialTransactionId?: string</code> - ID inicial para carga automática.</li>
+                    <li><code>onError?: (error: string) => void</code> - Callback para errores.</li>
+                </ul>
+                <p><strong>Secciones de información:</strong></p>
+                <ul>
+                    <li>Información Básica: ID, Card Number, Type Code, Category Code, Source.</li>
+                    <li>Información Financiera: Amount (con formato USD), Original/Processed Dates.</li>
+                    <li>Información del Comerciante: Merchant ID, Name, City, Zip con iconos.</li>
+                </ul>
+            </div>
+
+            <div class="component-card">
+                <h4>TransactionAddScreen.tsx</h4>
+                <p><strong>Propósito:</strong> Formulario de alta de transacciones con confirmación.</p>
+                <p><strong>Flujo:</strong></p>
+                <ol>
+                    <li>Formulario inicial: Captura de todos los campos (identificación, transacción, comerciante).</li>
+                    <li>Validación: Al presionar botón o F5, se validan todos los campos.</li>
+                    <li>Pantalla de confirmación: Muestra resumen y solicita confirmación Y/N.</li>
+                    <li>Guardado: Si confirmación es 'Y', se envía al backend y se muestra resultado.</li>
+                </ol>
+                <p><strong>Validaciones implementadas:</strong></p>
+                <ul>
+                    <li>Account ID o Card Number requerido (al menos uno).</li>
+                    <li>Transaction fields: Type Code, Category Code, Source, Description, Amount.</li>
+                    <li>Fechas: Original Date y Process Date con validación de formato.</li>
+                    <li>Merchant: ID, Name, City, Zip todos obligatorios.</li>
+                </ul>
+            </div>
+
+            <div class="component-card">
+                <h4>TransactionReportsScreen.tsx + TransactionReportTable.tsx</h4>
+                <p><strong>Propósito:</strong> Generación y visualización de reportes de transacciones.</p>
+                <p><strong>Tipos de reporte:</strong></p>
+                <ul>
+                    <li><strong>Monthly:</strong> Reporte del mes actual (fechas automáticas).</li>
+                    <li><strong>Yearly:</strong> Reporte del año actual (fechas automáticas).</li>
+                    <li><strong>Custom:</strong> Rango de fechas personalizado (start/end date obligatorios).</li>
+                </ul>
+                <p><strong>Estructura de datos del reporte:</strong></p>
+                <ul>
+                    <li><code>reportType</code>: Tipo de reporte generado.</li>
+                    <li><code>accountGroups</code>: Array de grupos por cuenta con transacciones y subtotales.</li>
+                    <li><code>grandTotal</code>: Suma total de todas las transacciones.</li>
+                    <li><code>totalTransactionCount</code>: Número total de transacciones.</li>
+                    <li><code>accountCount</code>: Número de cuentas en el reporte.</li>
+                </ul>
+            </div>
+
+            <h3>🔗 Integraciones y Dependencias</h3>
+            
+            <div class="component-card">
+                <h4>API Endpoints</h4>
+                <p><strong>Base URL:</strong> <code>/api/transactions</code></p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Método</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/list</code></td>
+                            <td>POST</td>
+                            <td>Listar transacciones con paginación y búsqueda</td>
+                        </tr>
+                        <tr>
+                            <td><code>/next-page</code></td>
+                            <td>POST</td>
+                            <td>Obtener página siguiente de transacciones</td>
+                        </tr>
+                        <tr>
+                            <td><code>/previous-page</code></td>
+                            <td>POST</td>
+                            <td>Obtener página anterior de transacciones</td>
+                        </tr>
+                        <tr>
+                            <td><code>/view</code></td>
+                            <td>POST</td>
+                            <td>Obtener detalles de una transacción por ID</td>
+                        </tr>
+                        <tr>
+                            <td><code>/add</code></td>
+                            <td>POST</td>
+                            <td>Crear nueva transacción</td>
+                        </tr>
+                        <tr>
+                            <td><code>/reports</code></td>
+                            <td>POST</td>
+                            <td>Generar reporte de transacciones</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="component-card">
+                <h4>Tipos de Datos (TypeScript)</h4>
+                <div class="code-block">
+// TransactionItem (para lista)
+interface TransactionItem {
+  transactionId: string;
+  date: string; // MM/DD/YY
+  description: string;
+  amount: number;
+}
+
+// TransactionViewResponse (detalles completos)
+interface TransactionViewResponse {
+  transactionId?: string;
+  cardNumber?: string;
+  transactionTypeCode?: string;
+  transactionCategoryCode?: string;
+  transactionSource?: string;
+  transactionAmount?: string;
+  transactionDescription?: string;
+  originalTimestamp?: string;
+  processedTimestamp?: string;
+  merchantId?: string;
+  merchantName?: string;
+  merchantCity?: string;
+  merchantZip?: string;
+}
+
+// TransactionAddRequest (alta)
+interface TransactionAddRequest {
+  accountId?: string;
+  cardNumber?: string;
+  transactionTypeCode: string;
+  transactionCategoryCode: string;
+  transactionSource: string;
+  transactionDescription: string;
+  transactionAmount: string;
+  originalDate: string;
+  processDate: string;
+  merchantId: string;
+  merchantName: string;
+  merchantCity: string;
+  merchantZip: string;
+  confirmation: 'Y' | 'N' | '';
+}
+
+// ReportData (reportes)
+interface ReportData {
+  reportType: string;
+  startDate: string;
+  endDate: string;
+  accountGroups: AccountGroup[];
+  grandTotal: number;
+  totalTransactionCount: number;
+  accountCount: number;
+}
+                </div>
+            </div>
+
+            <div class="component-card">
+                <h4>SystemHeader Component</h4>
+                <p>Todas las pantallas de transacciones utilizan el componente <code>SystemHeader</code> que muestra:</p>
+                <ul>
+                    <li><strong>transactionId:</strong> Código de transacción legacy (CT00, CT01, CT02, etc.).</li>
+                    <li><strong>programName:</strong> Nombre del programa COBOL original (COTRN00C, COTRN01C, etc.).</li>
+                    <li><strong>title:</strong> Título descriptivo de la pantalla.</li>
+                    <li><strong>subtitle:</strong> Subtítulo o contexto adicional.</li>
+                </ul>
+            </div>
+
+            <h3>🎨 Patrones de UI/UX</h3>
+            
+            <div class="component-card">
+                <h4>Formateo de Montos</h4>
+                <div class="code-block">
+const formatAmount = (amount: number): string => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+  }).format(amount);
+};
+
+// Uso en UI: colores diferenciados
+&lt;Typography 
+  color={amount < 0 ? 'error.main' : 'success.main'}
+&gt;
+  {formatAmount(amount)}
+&lt;/Typography&gt;
+                </div>
+            </div>
+
+            <div class="component-card">
+                <h4>Formateo de Fechas</h4>
+                <div class="code-block">
+// Para visualización detallada
+const formatDateTime = (dateTime: string): string => {
+  return new Date(dateTime).toLocaleString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+};
+
+// Para tabla: formato corto MM/DD/YY
+date: "01/15/24"
+                </div>
+            </div>
+
+            <div class="component-card">
+                <h4>Paginación Manual</h4>
+                <p><strong>Patrón:</strong> Navegación con botones F7/F8 sin paginación automática.</p>
+                <ul>
+                    <li><code>hasNextPage</code> y <code>hasPreviousPage</code> controlan habilitación de botones.</li>
+                    <li>Al cambiar página, se trackean <code>firstTransactionId</code> y <code>lastTransactionId</code> para el backend.</li>
+                    <li>Loading states durante la carga de nuevas páginas.</li>
+                    <li>Indicador de página actual en chip visual.</li>
+                </ul>
+            </div>
+
+            <div class="component-card">
+                <h4>Selección tipo Mainframe</h4>
+                <p><strong>Patrón:</strong> Campo de input de 1 carácter por fila, usuario escribe 'S' y presiona ENTER o ícono.</p>
+                <div class="code-block">
+// Estado de selección por transacción
+const [selectionInputs, setSelectionInputs] = 
+  useState&lt;Record&lt;string, string&gt;&gt;({});
+
+// Handler de cambio
+const handleSelectionChange = (transactionId: string, value: string) => {
+  setSelectionInputs(prev => ({ 
+    ...prev, 
+    [transactionId]: value.toUpperCase() 
+  }));
+};
+
+// Handler de submit
+const handleSelectionSubmit = (transactionId: string) => {
+  const selection = selectionInputs[transactionId];
+  if (selection === 'S') {
+    // Navegar a vista detallada
+    onTransactionSelect(transactionId);
+  }
+};
+                </div>
+            </div>
+
+            <div class="component-card">
+                <h4>Flujo de Confirmación (Two-Step)</h4>
+                <p><strong>Usado en:</strong> TransactionAddScreen, TransactionReportsScreen</p>
+                <ol>
+                    <li><strong>Paso 1 - Formulario:</strong> Captura de datos, validación en tiempo real.</li>
+                    <li><strong>Paso 2 - Confirmación:</strong> Pantalla de revisión con campos en modo lectura, campo de confirmación Y/N.</li>
+                    <li><strong>Guardado:</strong> Solo si confirmación es 'Y', se envía al backend.</li>
+                    <li><strong>Resultado:</strong> Mensaje de éxito/error y limpieza de formulario.</li>
+                </ol>
+                <p><strong>Estado controlado por:</strong> <code>isConfirmationStep</code> boolean en el hook.</p>
+            </div>
+        </section>
+
+        <section class="acceptance">
+            <h2>✅ Ejemplos de Criterios de Aceptación</h2>
+            
+            <div class="highlight">
+                <h3>US: Listado de transacciones con paginación</h3>
+                <p><strong>Dado</strong> que soy un operador autenticado en la pantalla de lista de transacciones</p>
+                <p><strong>Cuando</strong> cargo la página inicial</p>
+                <p><strong>Entonces</strong></p>
+                <ul>
+                    <li>Veo las primeras 10 transacciones ordenadas por fecha/ID</li>
+                    <li>Veo el número de página actual en un chip destacado</li>
+                    <li>El botón F7 (Backward) está deshabilitado en la primera página</li>
+                    <li>El botón F8 (Forward) está habilitado si hay más páginas</li>
+                    <li>Cada fila muestra: Transaction ID, Date (MM/DD/YY), Description, Amount formateado</li>
+                    <li>Los montos negativos se muestran en rojo, los positivos en verde</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>US: Búsqueda de transacción por ID</h3>
+                <p><strong>Dado</strong> que estoy en la pantalla de lista de transacciones</p>
+                <p><strong>Cuando</strong> ingreso un Transaction ID numérico válido y presiono ENTER o el botón Search</p>
+                <p><strong>Entonces</strong></p>
+                <ul>
+                    <li>Se ejecuta la búsqueda y se actualiza la lista con los resultados</li>
+                    <li>Si la transacción existe, se muestra en la tabla</li>
+                    <li>Si no existe, se muestra un mensaje de error descriptivo</li>
+                    <li>El campo de búsqueda se limpia después de una búsqueda exitosa (opcional)</li>
+                    <li>Los errores de validación (ej. formato incorrecto) se muestran bajo el campo</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>US: Selección y vista de detalle</h3>
+                <p><strong>Dado</strong> que veo la lista de transacciones</p>
+                <p><strong>Cuando</strong> escribo 'S' en el campo de selección de una fila y presiono ENTER o el ícono de ojo</p>
+                <p><strong>Entonces</strong></p>
+                <ul>
+                    <li>Navego a la pantalla de vista detallada de esa transacción</li>
+                    <li>La pantalla muestra toda la información de la transacción organizada en secciones</li>
+                    <li>Veo información básica, financiera y del comerciante con iconos visuales</li>
+                    <li>Los montos están formateados en USD con 2 decimales</li>
+                    <li>Las fechas están formateadas en formato legible</li>
+                    <li>Puedo regresar a la lista con F3 o el botón Back</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>US: Alta de transacción con validación</h3>
+                <p><strong>Dado</strong> que estoy en la pantalla de alta de transacciones</p>
+                <p><strong>Cuando</strong> completo todos los campos obligatorios correctamente y presiono F5 o el botón de confirmación</p>
+                <p><strong>Entonces</strong></p>
+                <ul>
+                    <li>Veo una pantalla de confirmación con todos los datos en modo lectura</li>
+                    <li>Se me solicita confirmación con campo Y/N</li>
+                    <li><strong>Si confirmo con 'Y':</strong>
+                        <ul>
+                            <li>La transacción se guarda en el sistema</li>
+                            <li>Veo un mensaje de éxito con el nuevo Transaction ID generado</li>
+                            <li>El formulario se limpia automáticamente</li>
+                        </ul>
+                    </li>
+                    <li><strong>Si confirmo con 'N' o cancelo:</strong>
+                        <ul>
+                            <li>Regreso al formulario de alta con los datos intactos</li>
+                            <li>Puedo modificar campos y reintentar</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>US: Validaciones del formulario de alta</h3>
+                <p><strong>Dado</strong> que estoy completando el formulario de alta de transacciones</p>
+                <p><strong>Cuando</strong> intento avanzar sin completar campos obligatorios</p>
+                <p><strong>Entonces</strong></p>
+                <ul>
+                    <li>Veo mensajes de error específicos bajo cada campo incompleto o inválido</li>
+                    <li>El botón de confirmación permanece habilitado pero la validación impide avanzar</li>
+                    <li><strong>Validaciones específicas:</strong>
+                        <ul>
+                            <li>Account ID o Card Number: al menos uno es obligatorio</li>
+                            <li>Transaction Amount: debe ser un número válido con máximo 2 decimales</li>
+                            <li>Fechas: formato válido reconocible (ISO o texto)</li>
+                            <li>Merchant fields: todos obligatorios (ID, Name, City, Zip)</li>
+                            <li>Type Code y Category Code: no vacíos</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>US: Generación de reporte mensual</h3>
+                <p><strong>Dado</strong> que estoy en la pantalla de reportes de transacciones</p>
+                <p><strong>Cuando</strong> selecciono el tab "Monthly Report" y confirmo con 'Y'</p>
+                <p><strong>Entonces</strong></p>
+                <ul>
+                    <li>Se genera un reporte con las transacciones del mes actual</li>
+                    <li>Las fechas de inicio y fin se calculan automáticamente (primer y último día del mes)</li>
+                    <li>El reporte muestra transacciones agrupadas por Card Number y Account ID</li>
+                    <li>Cada grupo muestra: subtotal de la cuenta y número de transacciones</li>
+                    <li>Al final veo: Grand Total, Total Transaction Count, Account Count</li>
+                    <li>Cada transacción muestra: ID, Type/Category (con descripciones), Amount (con color), Processed Date</li>
+                </ul>
+            </div>
+
+            <div class="highlight">
+                <h3>US: Reporte personalizado con validación de rango</h3>
+                <p><strong>Dado</strong> que estoy en el tab "Custom Report"</p>
+                <p><strong>Cuando</strong> ingreso un rango de fechas donde Start Date > End Date</p>
+                <p><strong>Entonces</strong></p>
+                <ul>
+                    <li>Veo un mensaje de error indicando que el rango es inválido</li>
+                    <li>No puedo confirmar la generación del reporte hasta corregir las fechas</li>
+                    <li>Los mensajes de error son claros y específicos: "Start date must be before or equal to end date"</li>
+                </ul>
+                <p><strong>Y cuando</strong> corrijo las fechas con un rango válido y confirmo con 'Y'</p>
+                <p><strong>Entonces</strong></p>
+                <ul>
+                    <li>Se genera el reporte con las transacciones en ese rango</li>
+                    <li>La estructura es idéntica a los reportes mensuales/anuales</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="testing">
+            <h2>🧪 Consideraciones de Testing</h2>
+            
+            <div class="component-card">
+                <h4>Mock Data (MSW)</h4>
+                <p>Para pruebas con <code>VITE_USE_MOCKS=true</code>, los handlers incluyen:</p>
+                <ul>
+                    <li><strong>transactionListHandlers:</strong> 30+ transacciones de muestra con montos variados (positivos/negativos), fechas secuenciales, paginación simulada.</li>
+                    <li><strong>transactionViewHandlers:</strong> Detalles completos por ID, incluyendo información de comerciante variada.</li>
+                    <li><strong>transactionAddHandlers:</strong> Validación de campos, generación de nuevo ID, respuestas de éxito/error.</li>
+                    <li><strong>transactionReportsHandlers:</strong> Generación de reportes con 3-5 cuentas agrupadas, transacciones variadas, totales calculados.</li>
+                </ul>
+            </div>
+
+            <div class="component-card">
+                <h4>Escenarios de Prueba Clave</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Escenario</th>
+                            <th>Qué verificar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Carga inicial de lista</td>
+                            <td>10 transacciones visibles, paginación correcta, botones habilitados/deshabilitados según contexto.</td>
+                        </tr>
+                        <tr>
+                            <td>Búsqueda por ID existente</td>
+                            <td>Transacción encontrada, datos mostrados correctamente, sin errores.</td>
+                        </tr>
+                        <tr>
+                            <td>Búsqueda por ID inexistente</td>
+                            <td>Mensaje de error claro, lista vacía o sin cambios, no crash.</td>
+                        </tr>
+                        <tr>
+                            <td>Paginación F7/F8</td>
+                            <td>Cambio correcto de página, datos actualizados, botones se habilitan/deshabilitan dinámicamente.</td>
+                        </tr>
+                        <tr>
+                            <td>Selección 'S' y navegación</td>
+                            <td>Redirección correcta a /transaction/view/:id, datos cargados en destino.</td>
+                        </tr>
+                        <tr>
+                            <td>Alta sin campos obligatorios</td>
+                            <td>Mensajes de error específicos, no se permite avanzar a confirmación.</td>
+                        </tr>
+                        <tr>
+                            <td>Alta con confirmación 'N'</td>
+                            <td>Regreso a formulario, datos intactos, no se guarda nada.</td>
+                        </tr>
+                        <tr>
+                            <td>Alta con confirmación 'Y'</td>
+                            <td>Guardado exitoso, mensaje con nuevo ID, formulario limpio.</td>
+                        </tr>
+                        <tr>
+                            <td>Reporte Custom con rango inválido</td>
+                            <td>Error de validación, no se genera reporte, mensaje claro.</td>
+                        </tr>
+                        <tr>
+                            <td>Reporte generado correctamente</td>
+                            <td>Agrupación por cuenta, subtotales correctos, grand total cuadra, contadores precisos.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="component-card">
+                <h4>Testing de Teclas de Función</h4>
+                <p>Verificar que todas las teclas de función funcionan en cada pantalla:</p>
+                <ul>
+                    <li><strong>F3:</strong> Siempre regresa al menú o pantalla anterior.</li>
+                    <li><strong>F4:</strong> Limpia el formulario/pantalla (donde aplica).</li>
+                    <li><strong>F5:</strong> Acción principal (Browse, Save, etc. según contexto).</li>
+                    <li><strong>F7:</strong> Página anterior (paginación).</li>
+                    <li><strong>F8:</strong> Página siguiente (paginación).</li>
+                    <li><strong>F12/ESC:</strong> Salir/cancelar.</li>
+                    <li><strong>ENTER:</strong> Acción contextual (búsqueda, selección, confirmación).</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="navigation">
+            <h2>🗺️ Navegación y Rutas</h2>
+            
+            <div class="component-card">
+                <h4>Rutas del Módulo Transaction</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ruta</th>
+                            <th>Componente</th>
+                            <th>Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/transaction/list</code></td>
+                            <td>TransactionListPage</td>
+                            <td>Lista de transacciones con búsqueda y paginación</td>
+                        </tr>
+                        <tr>
+                            <td><code>/transaction/view/:id?</code></td>
+                            <td>TransactionViewPage</td>
+                            <td>Vista detallada de transacción (ID opcional desde URL)</td>
+                        </tr>
+                        <tr>
+                            <td><code>/transaction/add</code></td>
+                            <td>TransactionAddPage</td>
+                            <td>Formulario de alta de transacción nueva</td>
+                        </tr>
+                        <tr>
+                            <td><code>/transaction/reports</code></td>
+                            <td>TransactionReportsPage</td>
+                            <td>Generación y visualización de reportes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="component-card">
+                <h4>Flujos de Navegación Típicos</h4>
+                <ol>
+                    <li><strong>Consulta rápida:</strong> Menu → List → Seleccionar 'S' → View → F3 (back to List) → F3 (back to Menu)</li>
+                    <li><strong>Alta de transacción:</strong> Menu → Add → Completar formulario → Confirmar 'Y' → Éxito → F3 (back to Menu)</li>
+                    <li><strong>Búsqueda específica:</strong> Menu → List → Search by ID → F5 (Browse) → View con ID cargado → F3 (back)</li>
+                    <li><strong>Generación de reporte:</strong> Menu → Reports → Seleccionar tipo → Confirmar → Ver reporte → F5 (regenerar) o F3 (salir)</li>
+                </ol>
+            </div>
+        </section>
+
+        <div style="margin-top: 3rem; text-align: center;">
+            <a href="../../index.html" class="back-link">← Volver a la documentación principal</a>
+        </div>
+    </div>
+</body>
+</html>
