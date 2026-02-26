@@ -30,7 +30,7 @@ import {
   Person,
   AdminPanelSettings,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import type { UserSecurityData, UserListRequest, UserSelectionAction, NormalizedUserType } from '~/types/user';
 import { normalizeUserType } from '~/types/user';
 
@@ -164,7 +164,7 @@ export function UserListScreen({
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CU00"
           programName="COUSR00C"
           title="List Users"

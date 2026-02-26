@@ -34,7 +34,7 @@ import {
   Clear,
   Info,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { LoadingSpinner } from '~/components/ui/LoadingSpinner';
 import { useCreditCardList } from '~/hooks/useCreditCardList';
 import type { CreditCardFilter } from '~/types/creditCard';
@@ -212,7 +212,7 @@ export function CreditCardListScreen({ onExit }: CreditCardListScreenProps) {
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CCLI"
           programName="COCRDLIC"
           title="List Credit Cards"

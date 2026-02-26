@@ -43,7 +43,7 @@ import {
   Info,
   KeyboardReturn,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { LoadingSpinner } from '~/components/ui/LoadingSpinner';
 import { useCreditCardUpdate } from '~/hooks/useCreditCardUpdate';
 
@@ -269,7 +269,7 @@ export function CreditCardUpdateScreen({ onExit }: CreditCardUpdateScreenProps) 
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CCUP"
           programName="COCRDUPC"
           title="Update Credit Card Details"

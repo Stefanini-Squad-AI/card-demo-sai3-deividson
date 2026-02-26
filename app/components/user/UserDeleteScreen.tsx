@@ -28,7 +28,7 @@ import {
   AdminPanelSettings,
   Warning,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import type { 
   UserDeleteFormData, 
   UserDeleteValidationErrors,
@@ -107,7 +107,7 @@ export function UserDeleteScreen({
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CU03"
           programName="COUSR03C"
           title="Delete User"

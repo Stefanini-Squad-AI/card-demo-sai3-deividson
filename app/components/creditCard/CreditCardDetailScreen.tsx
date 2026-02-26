@@ -33,7 +33,7 @@ import {
   Schedule,
   Info,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { LoadingSpinner } from '~/components/ui/LoadingSpinner';
 import { useCreditCardDetail } from '~/hooks/useCreditCardDetail';
 import type { CreditCardDetailRequest } from '~/types/creditCardDetail';
@@ -278,7 +278,7 @@ export function CreditCardDetailScreen({ onExit }: CreditCardDetailScreenProps) 
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CCDL"
           programName="COCRDSLC"
           title="View Credit Card Detail"

@@ -41,7 +41,7 @@ import {
   Badge,
   CreditScore,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { LoadingSpinner } from '~/components/ui/LoadingSpinner';
 import type { AccountViewRequest, AccountViewResponse } from '~/types/account';
 
@@ -176,7 +176,7 @@ export function AccountViewScreen({
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CAVW"
           programName="COACTVWC"
           title="CardDemo - Account Viewer"

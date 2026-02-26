@@ -24,7 +24,7 @@ import {
   Receipt,
   Info,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { LoadingSpinner } from '~/components/ui/LoadingSpinner';
 import { useBillPayment } from '~/hooks/useBillPayment';
 import { formatCurrency } from '~/utils';
@@ -397,7 +397,7 @@ export function BillPaymentScreen() {
   return (
     <Container maxWidth="md" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CB00"
           programName="COBIL00C"
           title="CardDemo - Bill Payment"

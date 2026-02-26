@@ -31,7 +31,7 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import type { 
   UserUpdateFormData, 
   UserUpdateValidationErrors,
@@ -101,7 +101,7 @@ export function UserUpdateScreen({
   return (
     <Container maxWidth="lg" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CU02"
           programName="COUSR02C"
           title="Update User"

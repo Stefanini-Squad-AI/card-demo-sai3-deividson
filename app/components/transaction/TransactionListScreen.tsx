@@ -33,7 +33,7 @@ import {
   CalendarToday as DateIcon,
   Info as InfoIcon,
 } from '@mui/icons-material';
-import { SystemHeader } from '~/components/layout/SystemHeader';
+import { GlobalHeader } from '~/components/layout/GlobalHeader';
 import { useTransactionList } from '~/hooks/useTransactionList';
 
 interface TransactionListScreenProps {
@@ -114,7 +114,7 @@ export function TransactionListScreen({
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        <SystemHeader
+        <GlobalHeader
           transactionId="CT00"
           programName="COTRN00C"
           title="List Transactions"
