@@ -194,7 +194,16 @@ export default function LoginPage() {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Box onKeyDown={handleKeyDown} tabIndex={-1}>
-        {/* SystemHeader y controles responsivos */}
+        <Box
+          sx={{
+            width: 'clamp(320px, 90vw, 1100px)',
+            marginInline: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: theme.spacing(3),
+          }}
+        >
+          {/* SystemHeader y controles responsivos */}
           <GlobalHeader
             transactionId="CC00"
             programName="COSGN00C"
@@ -208,23 +217,22 @@ export default function LoginPage() {
             onDocsOpen={handleOpenDocs}
           />
 
-        <Paper
-          elevation={3}
-          sx={{
-            borderRadius: 3,
-            overflow: 'hidden',
-            background: `linear-gradient(145deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.default, 0.1)})`,
-            width: 'clamp(320px, 90vw, 1100px)',
-            mx: 'auto',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'stretch',
-            px: { xs: 2, sm: 3, md: 4 },
-            '@media (min-width:1280px)': {
-              px: theme.spacing(6),
-            },
-          }}
-        >
+          <Paper
+            elevation={3}
+            sx={{
+              borderRadius: 3,
+              overflow: 'hidden',
+              background: `linear-gradient(145deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.default, 0.1)})`,
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'stretch',
+              px: { xs: 2, sm: 3, md: 4 },
+              '@media (min-width:1280px)': {
+                px: theme.spacing(6),
+              },
+            }}
+          >
           <Box
             sx={{
               width: '100%',
