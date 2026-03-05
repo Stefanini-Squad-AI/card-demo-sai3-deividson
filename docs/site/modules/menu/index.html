@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍔 MENU - Guía de Desarrollo de User Stories</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .overview {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .overview h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        
+        .overview p {
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+        
+        .overview strong {
+            color: #667eea;
+        }
+        
+        section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+        
+        h3 {
+            color: #5568d3;
+            margin: 1.5rem 0 1rem;
+            font-size: 1.4rem;
+        }
+        
+        h4 {
+            color: #764ba2;
+            margin: 1rem 0 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .us-template {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        
+        .us-template strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .us-template p {
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        
+        .criteria {
+            background: white;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+        
+        .criteria li {
+            color: #2c5282;
+        }
+        
+        .criteria li:before {
+            content: "✅ ";
+            color: #48bb78;
+            font-weight: bold;
+        }
+        
+        .complexity-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-left: 0.5rem;
+        }
+        
+        .simple {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .medium {
+            background: #feebc8;
+            color: #7c2d12;
+        }
+        
+        .complex {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .component-card {
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .component-card h4 {
+            margin-top: 0;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .highlight {
+            background: #fef3c7;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+        
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        
+        .info {
+            background: #dbeafe;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        
+        .success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+            background: white;
+            border-radius: 8px;
+            margin-top: 2rem;
+        }
+        
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        footer a:hover {
+            text-decoration: underline;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🍔 MENU - Menús del Sistema</h1>
+            <p class="subtitle">Guía de Desarrollo de User Stories</p>
+        </header>
+
+        <section class="overview">
+            <h2>📋 Descripción General</h2>
+            <p><strong>Propósito:</strong> Módulo de navegación principal del sistema que gestiona menús basados en roles (back-office y admin), permitiendo acceso a funcionalidades mediante selección numérica o click directo.</p>
+            <p><strong>Contexto de Negocio:</strong> El módulo MENU es la puerta de entrada principal a todas las funcionalidades del sistema CardDemo. Permite a los usuarios navegar de forma intuitiva según sus permisos, emulando la experiencia de sistemas mainframe tradicionales pero con una interfaz moderna y responsive.</p>
+            <p><strong>Roles Soportados:</strong></p>
+            <ul>
+                <li><strong>Back-office:</strong> Acceso al menú principal con funciones operativas</li>
+                <li><strong>Admin:</strong> Acceso a menú principal y menú administrativo</li>
+            </ul>
+        </section>
+
+        <section class="us-guide">
+            <h2>🎯 Guía de Desarrollo de User Stories</h2>
+            
+            <h3>📝 Templates Específicos de User Stories</h3>
+            
+            <div class="us-template">
+                <strong>US-MENU-001: Visualización de Menú Principal</strong>
+                <p>Como usuario autenticado del sistema, quiero visualizar el menú principal con todas las opciones disponibles según mi rol, para poder acceder rápidamente a las funcionalidades que necesito.</p>
+                
+                <div class="criteria">
+                    <strong>Criterios de Aceptación:</strong>
+                    <ul style="list-style: none;">
+                        <li>El menú muestra título "CardDemo - Main Menu" y subtítulo</li>
+                        <li>Se muestran todas las opciones numeradas del 1 al 10</li>
+                        <li>Cada opción incluye label y descripción</li>
+                        <li>El diseño es responsive (2 columnas en pantallas anchas)</li>
+                        <li>Las opciones solo-admin muestran badge "Admin"</li>
+                        <li>El header muestra transactionId "CC00" y programName "COMEN01"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="us-template">
+                <strong>US-MENU-002: Selección de Opción por Número</strong>
+                <p>Como usuario del menú, quiero ingresar un número (01-10) y presionar Enter para navegar a la funcionalidad seleccionada, facilitando la navegación rápida sin usar el mouse.</p>
+                
+                <div class="criteria">
+                    <strong>Criterios de Aceptación:</strong>
+                    <ul style="list-style: none;">
+                        <li>Input acepta solo números de máximo 2 dígitos</li>
+                        <li>Botón "Continue" se habilita solo con input válido</li>
+                        <li>Al presionar Enter o click en Continue, se navega a la ruta de la opción</li>
+                        <li>Se muestra loading state durante la navegación</li>
+                        <li>Opciones deshabilitadas no se pueden seleccionar</li>
+                        <li>Se muestra error si la selección es inválida</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="us-template">
+                <strong>US-MENU-003: Selección de Opción por Click</strong>
+                <p>Como usuario del menú, quiero hacer click directamente en cualquier opción para navegar a esa funcionalidad, proporcionando una alternativa moderna a la selección numérica.</p>
+                
+                <div class="criteria">
+                    <strong>Criterios de Aceptación:</strong>
+                    <ul style="list-style: none;">
+                        <li>Cada opción es clickeable (ListItemButton)</li>
+                        <li>Hover muestra traslación (8px) y sombra</li>
+                        <li>Click en opción habilitada navega a su ruta</li>
+                        <li>Opciones disabled no responden a clicks</li>
+                        <li>Badge numerado cambia a color primario en hover</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="us-template">
+                <strong>US-MENU-004: Acceso a Menú Administrativo</strong>
+                <p>Como usuario con rol admin, quiero acceder al menú de administración con funciones de seguridad y gestión de usuarios, para realizar tareas administrativas del sistema.</p>
+                
+                <div class="criteria">
+                    <strong>Criterios de Aceptación:</strong>
+                    <ul style="list-style: none;">
+                        <li>Solo usuarios admin pueden acceder a /menu/admin</li>
+                        <li>El menú muestra título "CardDemo - Administration Menu"</li>
+                        <li>Se muestran 4 opciones de seguridad (User List, Add, Update, Delete)</li>
+                        <li>transactionId es "CADM" y programName "COADM01"</li>
+                        <li>Usuarios back-office son redirigidos a /menu/main</li>
+                        <li>Icono AdminPanelSettings se muestra en el header</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="us-template">
+                <strong>US-MENU-005: Salida del Menú (F3/Exit)</strong>
+                <p>Como usuario del menú, quiero presionar F3 o hacer click en el botón Exit para cerrar sesión y regresar al login, asegurando que puedo salir del sistema de forma segura.</p>
+                
+                <div class="criteria">
+                    <strong>Criterios de Aceptación:</strong>
+                    <ul style="list-style: none;">
+                        <li>Presionar F3 ejecuta logout</li>
+                        <li>Presionar ESC ejecuta logout</li>
+                        <li>Click en botón "F3 = Exit" ejecuta logout</li>
+                        <li>Se ejecuta dispatch(logoutUser()) de Redux</li>
+                        <li>Usuario es redirigido a /login</li>
+                        <li>Estado de autenticación se limpia completamente</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="us-template">
+                <strong>US-MENU-006: Diseño Responsive del Menú</strong>
+                <p>Como usuario móvil, quiero que el menú se adapte al tamaño de mi pantalla, para poder navegar cómodamente desde cualquier dispositivo.</p>
+                
+                <div class="criteria">
+                    <strong>Criterios de Aceptación:</strong>
+                    <ul style="list-style: none;">
+                        <li>Pantallas ≥1360px: Grid de 2 columnas</li>
+                        <li>Pantallas móviles: Grid de 1 columna</li>
+                        <li>Pantallas &lt;720px: Altura de lista ajustada dinámicamente</li>
+                        <li>Scroll vertical funciona cuando opciones exceden altura</li>
+                        <li>Botones y campos mantienen tamaño legible en móvil</li>
+                        <li>Layout usa padding responsive (xs: 2, sm: 3)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>⚡ Factores de Aceleración del Desarrollo</h3>
+            
+            <div class="component-card">
+                <h4>🔄 Componente MenuScreen Reutilizable</h4>
+                <p><strong>Aceleración:</strong> ~70% de reducción en tiempo de desarrollo</p>
+                <p><strong>Cómo usarlo:</strong> MenuScreen es un componente genérico que acepta MenuData como prop. No es necesario crear nuevos componentes de menú, solo definir los datos.</p>
+                <div class="code-block">
+&lt;MenuScreen
+  menuData={getCustomMenuData()}
+  onOptionSelect={handleOptionSelect}
+  onExit={handleExit}
+  error={error}
+  loading={loading}
+/&gt;
+                </div>
+            </div>
+
+            <div class="component-card">
+                <h4>🎣 Hook useMenu</h4>
+                <p><strong>Aceleración:</strong> ~50% de reducción en lógica de negocio</p>
+                <p><strong>Cómo usarlo:</strong> Proporciona toda la lógica de navegación, manejo de errores, loading states, y logout automáticamente.</p>
+                <div class="code-block">
+const { loading, error, handleOptionSelect, handleExit } = useMenu({
+  onError: (error) => console.error('Error:', error),
+  onSuccess: (option) => console.log('Selected:', option.label),
+});
+                </div>
+            </div>
+
+            <div class="component-card">
+                <h4>📊 Estructura de Datos menuData.ts</h4>
+                <p><strong>Aceleración:</strong> ~30% de reducción en configuración</p>
+                <p><strong>Cómo usarlo:</strong> Simplemente agregar funciones getters que retornen MenuData. No se requiere configuración de rutas adicionales.</p>
+                <div class="code-block">
+export const getMyMenuData = (): MenuData => ({
+  title: 'Mi Menú',
+  subtitle: 'Funciones Personalizadas',
+  transactionId: 'CUST',
+  programName: 'CUSTOM01',
+  userRole: 'back-office',
+  options: [
+    { id: 'opt1', label: 'Opción 1', path: '/custom/1' },
+    { id: 'opt2', label: 'Opción 2', path: '/custom/2', adminOnly: true },
+  ],
+});
+                </div>
+            </div>
+
+            <div class="component-card">
+                <h4>🎨 Material-UI Components</h4>
+                <p><strong>Aceleración:</strong> ~80% de reducción en desarrollo de UI</p>
+                <p><strong>Disponibles:</strong> Container, Paper, List, ListItemButton, TextField, Button, Chip, Alert, todos pre-configurados con estilos consistentes del sistema.</p>
+            </div>
+
+            <h3>📊 Guías de Complejidad</h3>
+            
+            <h4>Simple <span class="complexity-badge simple">1-2 puntos</span></h4>
+            <ul>
+                <li><strong>Agregar nueva opción a menú existente:</strong> Solo modificar array de options en menuData.ts</li>
+                <li><strong>Cambiar texto/descripción de opción:</strong> Actualizar label o description</li>
+                <li><strong>Deshabilitar opción temporalmente:</strong> Agregar disabled: true</li>
+                <li><strong>Cambiar rol requerido de opción:</strong> Modificar requiredRole o adminOnly</li>
+            </ul>
+
+            <h4>Medio <span class="complexity-badge medium">3-5 puntos</span></h4>
+            <ul>
+                <li><strong>Crear nuevo menú completo:</strong> Nueva función en menuData.ts + nueva página similar a MainMenuPage</li>
+                <li><strong>Agregar validación custom antes de navegar:</strong> Extender hook useMenu con lógica adicional</li>
+                <li><strong>Implementar opción con acción (no path):</strong> Usar campo action y manejar en useMenu</li>
+                <li><strong>Agregar subniveles al menú:</strong> Modificar estructura de MenuOption para soportar children</li>
+                <li><strong>Personalizar estilos del menú:</strong> Extender MenuScreen con props de theme customización</li>
+            </ul>
+
+            <h4>Complejo <span class="complexity-badge complex">5-8 puntos</span></h4>
+            <ul>
+                <li><strong>Implementar menú dinámico desde API:</strong> Fetch de opciones desde backend + actualización de types</li>
+                <li><strong>Agregar búsqueda/filtrado de opciones:</strong> Nuevo campo de búsqueda + lógica de filtrado en MenuScreen</li>
+                <li><strong>Implementar favoritos/recientes:</strong> Almacenamiento local + reordenamiento de opciones</li>
+                <li><strong>Soporte multi-idioma en menús:</strong> Integración con i18n + traducción de labels/descriptions</li>
+                <li><strong>Analytics de uso de opciones:</strong> Tracking de clicks + envío a analytics + dashboard</li>
+                <li><strong>Permisos granulares por opción:</strong> Sistema de permisos más complejo que solo admin/back-office</li>
+            </ul>
+
+            <div class="info">
+                <strong>💡 Tip de Estimación:</strong> Las tareas simples se resuelven modificando solo datos (menuData.ts). Las tareas medias requieren lógica nueva (hooks/validaciones). Las tareas complejas implican cambios arquitectónicos (nuevos módulos/integraciones).
+            </div>
+        </section>
+
+        <section class="technical">
+            <h2>🔧 Fundamentos Técnicos</h2>
+            
+            <h3>🏗️ Componentes Clave</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Componente</th>
+                        <th>Ubicación</th>
+                        <th>Responsabilidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>MenuScreen</strong></td>
+                        <td>/app/components/menu/MenuScreen.tsx</td>
+                        <td>Componente de UI reutilizable para renderizar cualquier menú</td>
+                    </tr>
+                    <tr>
+                        <td><strong>useMenu</strong></td>
+                        <td>/app/hooks/useMenu.ts</td>
+                        <td>Hook con lógica de navegación, loading, y manejo de errores</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MainMenuPage</strong></td>
+                        <td>/app/pages/MainMenuPage.tsx</td>
+                        <td>Página del menú principal (back-office y admin)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AdminMenuPage</strong></td>
+                        <td>/app/pages/AdminMenuPage.tsx</td>
+                        <td>Página del menú administrativo (solo admin)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>menuData</strong></td>
+                        <td>/app/data/menuData.ts</td>
+                        <td>Definición de datos de menús (getMainMenuData, getAdminMenuData)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>menu types</strong></td>
+                        <td>/app/types/menu.ts</td>
+                        <td>Interfaces TypeScript (MenuData, MenuOption)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>🔗 Dependencias Principales</h3>
+            
+            <h4>Módulos Internos</h4>
+            <ul>
+                <li><strong>AUTH:</strong> Verificación de autenticación y control de acceso por roles</li>
+                <li><strong>Layout:</strong> GlobalHeader component para encabezado consistente</li>
+                <li><strong>Store:</strong> Redux hooks (useAppSelector, useAppDispatch) y authSlice</li>
+            </ul>
+
+            <h4>Bibliotecas Externas</h4>
+            <ul>
+                <li><strong>React Router:</strong> Navegación (useNavigate, rutas)</li>
+                <li><strong>Material-UI:</strong> Componentes de UI (Container, Paper, List, TextField, Button, etc.)</li>
+                <li><strong>Redux Toolkit:</strong> Gestión de estado global (autenticación)</li>
+            </ul>
+
+            <h3>🌐 Interfaces Públicas (Mock API)</h3>
+            
+            <div class="code-block">
+GET /api/menu/main
+Respuesta: { success: true, data: MenuData }
+Descripción: Obtiene datos del menú principal
+
+GET /api/menu/admin
+Respuesta: { success: true, data: MenuData }
+Descripción: Obtiene datos del menú administrativo
+
+POST /api/menu/validate
+Request: { optionId: string, menuType: 'main' | 'admin' }
+Respuesta: { success: true, data: { validated: true, redirectUrl: string } }
+Descripción: Valida selección de opción
+            </div>
+
+            <h3>📊 Modelo de Datos</h3>
+            
+            <div class="code-block">
+interface MenuData {
+  title: string;                     // Título del menú
+  subtitle?: string;                 // Subtítulo opcional
+  transactionId: string;             // ID transacción (legacy COBOL)
+  programName: string;               // Nombre programa (legacy COBOL)
+  userRole: 'admin' | 'back-office'; // Rol del usuario
+  options: MenuOption[];             // Array de opciones
+}
+
+interface MenuOption {
+  id: string;                        // ID único
+  label: string;                     // Texto visible
+  description?: string;              // Descripción
+  path?: string;                     // Ruta de navegación
+  action?: string;                   // Acción personalizada
+  disabled?: boolean;                // Si está deshabilitada
+  requiredRole?: 'admin' | 'back-office' | 'both';
+  adminOnly?: boolean;               // Solo para admin
+}
+            </div>
+
+            <h3>🎯 Reglas de Negocio Clave</h3>
+            
+            <div class="warning">
+                <strong>⚠️ Control de Acceso:</strong>
+                <ul>
+                    <li>Menú Principal: Accesible por 'admin' y 'back-office'</li>
+                    <li>Menú Admin: Solo accesible por 'admin'</li>
+                    <li>Usuarios no autenticados → Redirigir a /login</li>
+                    <li>Back-office intentando acceder a admin → Redirigir a /menu/main</li>
+                </ul>
+            </div>
+
+            <div class="info">
+                <strong>📋 Validaciones de Selección:</strong>
+                <ul>
+                    <li>Input acepta solo números (máximo 2 dígitos)</li>
+                    <li>Opción debe existir en array de options</li>
+                    <li>Opción no debe estar marcada como disabled</li>
+                    <li>Botón Continue deshabilitado si input vacío</li>
+                </ul>
+            </div>
+
+            <div class="success">
+                <strong>✅ Comportamiento Responsive:</strong>
+                <ul>
+                    <li>≥1360px: Grid de 2 columnas, max height 80vh</li>
+                    <li>&lt;720px: Altura calculada dinámicamente (viewport - header - footer - 40px)</li>
+                    <li>Scroll personalizado cuando opciones exceden altura disponible</li>
+                    <li>Header y footer medidos con ResizeObserver</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="examples">
+            <h2>💡 Ejemplos de User Stories Completas</h2>
+            
+            <h3>Ejemplo 1: Agregar Nueva Opción al Menú Principal</h3>
+            <div class="us-template">
+                <strong>Historia:</strong>
+                <p>Como Product Owner, quiero agregar la opción "Customer Reports" al menú principal, para que los usuarios back-office puedan acceder a reportes de clientes.</p>
+                
+                <strong>Tareas Técnicas:</strong>
+                <ol>
+                    <li>Modificar /app/data/menuData.ts → función getMainMenuData()</li>
+                    <li>Agregar objeto al array options:
+                        <div class="code-block">
+{
+  id: 'customer-reports',
+  label: 'Customer Reports',
+  description: 'Generate customer activity reports',
+  path: '/reports/customers',
+}
+                        </div>
+                    </li>
+                    <li>Crear página /app/pages/reports/CustomerReportsPage.tsx</li>
+                    <li>Agregar ruta en React Router</li>
+                </ol>
+                
+                <strong>Estimación:</strong> <span class="complexity-badge simple">2 puntos</span>
+            </div>
+
+            <h3>Ejemplo 2: Implementar Menú de Reportes Dinámico</h3>
+            <div class="us-template">
+                <strong>Historia:</strong>
+                <p>Como administrador del sistema, quiero que las opciones del menú de reportes se carguen dinámicamente desde el backend según los permisos del usuario, para tener control centralizado de accesos.</p>
+                
+                <strong>Tareas Técnicas:</strong>
+                <ol>
+                    <li>Crear servicio /app/services/menuApi.ts con método fetchMenuOptions()</li>
+                    <li>Crear nuevo hook useMenuData() que maneje fetch y cache</li>
+                    <li>Modificar ReportsMenuPage para usar useMenuData en lugar de datos estáticos</li>
+                    <li>Actualizar types/menu.ts si API incluye nuevos campos</li>
+                    <li>Agregar loading skeleton mientras se cargan opciones</li>
+                    <li>Implementar error handling y retry logic</li>
+                    <li>Agregar tests para validar permisos</li>
+                </ol>
+                
+                <strong>Estimación:</strong> <span class="complexity-badge complex">8 puntos</span>
+            </div>
+
+            <h3>Ejemplo 3: Agregar Búsqueda en Menú</h3>
+            <div class="us-template">
+                <strong>Historia:</strong>
+                <p>Como usuario del sistema con muchas opciones en el menú, quiero poder buscar opciones por nombre, para encontrar rápidamente la funcionalidad que necesito sin tener que leer toda la lista.</p>
+                
+                <strong>Tareas Técnicas:</strong>
+                <ol>
+                    <li>Extender MenuScreen con prop opcional searchable: boolean</li>
+                    <li>Agregar TextField de búsqueda arriba de la lista de opciones</li>
+                    <li>Implementar lógica de filtrado por label y description</li>
+                    <li>Agregar highlight de texto coincidente</li>
+                    <li>Mantener numeración original de opciones (no renumerar filtradas)</li>
+                    <li>Agregar mensaje "No results found" cuando filtro no coincide</li>
+                    <li>Limpiar búsqueda con botón X</li>
+                </ol>
+                
+                <strong>Estimación:</strong> <span class="complexity-badge medium">5 puntos</span>
+            </div>
+        </section>
+
+        <section class="testing">
+            <h2>🧪 Patrones de Criterios de Aceptación</h2>
+            
+            <h3>Para Funcionalidades de Visualización</h3>
+            <div class="criteria">
+                <ul style="list-style: none;">
+                    <li>El componente renderiza sin errores en consola</li>
+                    <li>Todos los textos (título, subtítulo, labels) son visibles</li>
+                    <li>Los estilos se aplican correctamente (colores, espaciado, fuentes)</li>
+                    <li>El diseño es responsive en móvil, tablet, y desktop</li>
+                    <li>No hay overlapping de elementos en ningún tamaño de pantalla</li>
+                    <li>Accesibilidad: aria-labels presentes, contraste adecuado</li>
+                </ul>
+            </div>
+
+            <h3>Para Funcionalidades de Navegación</h3>
+            <div class="criteria">
+                <ul style="list-style: none;">
+                    <li>Click en opción válida navega a la ruta correcta</li>
+                    <li>Input numérico + Enter navega a la opción correspondiente</li>
+                    <li>Opciones disabled no permiten navegación</li>
+                    <li>Loading state se muestra durante transición</li>
+                    <li>URL cambia correctamente después de navegación</li>
+                    <li>Historial del navegador se actualiza (botón back funciona)</li>
+                </ul>
+            </div>
+
+            <h3>Para Funcionalidades de Control de Acceso</h3>
+            <div class="criteria">
+                <ul style="list-style: none;">
+                    <li>Usuario no autenticado es redirigido a /login</li>
+                    <li>Usuario sin permisos es redirigido a página apropiada</li>
+                    <li>Opciones adminOnly solo visibles para usuarios admin</li>
+                    <li>Badge "Admin" se muestra en opciones correspondientes</li>
+                    <li>Verificación de rol ocurre en useEffect de la página</li>
+                    <li>Redux state (isAuthenticated, user.role) se consulta correctamente</li>
+                </ul>
+            </div>
+
+            <h3>Para Funcionalidades de Manejo de Errores</h3>
+            <div class="criteria">
+                <ul style="list-style: none;">
+                    <li>Error se muestra en componente Alert con severity="error"</li>
+                    <li>Mensaje de error es descriptivo y ayuda al usuario</li>
+                    <li>Error no bloquea completamente la UI</li>
+                    <li>Usuario puede intentar de nuevo después de error</li>
+                    <li>Loading state se limpia después de error</li>
+                    <li>Error se registra en consola para debugging</li>
+                </ul>
+            </div>
+        </section>
+
+        <footer>
+            <p><a href="../../index.html">← Volver al Índice de Módulos</a></p>
+            <p style="margin-top: 1rem;"><em>Última actualización: 2026-03-05 | Versión: 1.0</em></p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem;">Módulo MENU - Sistema CardDemo</p>
+        </footer>
+    </div>
+</body>
+</html>
