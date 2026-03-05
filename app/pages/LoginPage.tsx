@@ -192,128 +192,150 @@ export default function LoginPage() {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Box onKeyDown={handleKeyDown} tabIndex={-1}>
+    <Container
+      maxWidth={false}
+      sx={{
+        px: { xs: 2, sm: 3, md: 4 },
+        py: 4,
+      }}
+    >
+      <Box
+        onKeyDown={handleKeyDown}
+        tabIndex={-1}
+        sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 3,
+        }}
+      >
         {/* SystemHeader y controles responsivos */}
-          <GlobalHeader
-            transactionId="CC00"
-            programName="COSGN00C"
-            title={translation.headerTitle}
-            subtitle={translation.headerSubtitle}
-            showNavigation={false}
-            language={language}
-            setLanguage={setLanguage}
-            translation={translation}
-            languageOptions={languageOptions}
-            onDocsOpen={handleOpenDocs}
-          />
+        <GlobalHeader
+          transactionId="CC00"
+          programName="COSGN00C"
+          title={translation.headerTitle}
+          subtitle={translation.headerSubtitle}
+          showNavigation={false}
+          language={language}
+          setLanguage={setLanguage}
+          translation={translation}
+          languageOptions={languageOptions}
+          onDocsOpen={handleOpenDocs}
+        />
 
-        <Paper
-          elevation={3}
+        <Box
           sx={{
-            borderRadius: 3,
-            overflow: 'hidden',
-            background: `linear-gradient(145deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.default, 0.1)})`,
-            width: 'clamp(320px, 90vw, 1100px)',
-            mx: 'auto',
+            width: '100%',
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'stretch',
-            px: { xs: 2, sm: 3, md: 4 },
-            '@media (min-width:1280px)': {
-              px: theme.spacing(6),
-            },
           }}
         >
-          <Box
+          <Paper
+            elevation={3}
             sx={{
-              width: '100%',
+              borderRadius: 3,
+              overflow: 'hidden',
+              background: `linear-gradient(145deg, ${alpha(theme.palette.background.paper, 0.9)}, ${alpha(theme.palette.background.default, 0.1)})`,
+              width: 'clamp(320px, 90vw, 1100px)',
+              mx: 'auto',
               display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: theme.spacing(3),
-              '@media (min-width:1024px)': {
-                flexDirection: 'row',
-                alignItems: 'stretch',
-                gap: theme.spacing(4),
+              justifyContent: 'center',
+              alignItems: 'stretch',
+              px: { xs: 2, sm: 3, md: 4 },
+              '@media (min-width:1280px)': {
+                px: theme.spacing(6),
               },
             }}
-            >
+          >
             <Box
               sx={{
-                flex: '1 1 100%',
-                minWidth: 0,
-                maxWidth: '100%',
-                p: { xs: 3, md: 4 },
-                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                color: 'white',
-                textAlign: 'center',
+                width: '100%',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                gap: theme.spacing(3),
                 '@media (min-width:1024px)': {
-                  flex: '1 1 55%',
-                  maxWidth: '55%',
+                  flexDirection: 'row',
+                  alignItems: 'stretch',
+                  gap: theme.spacing(4),
                 },
               }}
             >
               <Box
                 sx={{
-                  width: '100%',
+                  flex: '1 1 100%',
+                  minWidth: 0,
+                  maxWidth: '100%',
+                  p: { xs: 3, md: 4 },
+                  background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                  color: 'white',
+                  textAlign: 'center',
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  gap: 2,
-                  flexWrap: 'wrap',
-                  textAlign: 'left',
-                  mb: { xs: 3, md: 4 },
+                  '@media (min-width:1024px)': {
+                    flex: '1 1 55%',
+                    maxWidth: '55%',
+                  },
                 }}
               >
                 <Box
                   sx={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: 2,
-                    bgcolor: alpha(theme.palette.common.white, 0.15),
-                    border: `1px solid ${alpha(theme.palette.common.white, 0.4)}`,
+                    width: '100%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.2)}`,
+                    gap: 2,
+                    flexWrap: 'wrap',
+                    textAlign: 'left',
+                    mb: { xs: 3, md: 4 },
                   }}
                 >
-                  <CreditCard fontSize="large" />
+                  <Box
+                    sx={{
+                      width: 56,
+                      height: 56,
+                      borderRadius: 2,
+                      bgcolor: alpha(theme.palette.common.white, 0.15),
+                      border: `1px solid ${alpha(theme.palette.common.white, 0.4)}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      boxShadow: `0 4px 12px ${alpha(theme.palette.common.black, 0.2)}`,
+                    }}
+                  >
+                    <CreditCard fontSize="large" />
+                  </Box>
+                  <Box>
+                    <Typography variant="h4" fontWeight={600} sx={{ lineHeight: 1.2 }}>
+                      {translation.cardBrandName}
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
+                      {translation.cardBrandTagline}
+                    </Typography>
+                  </Box>
                 </Box>
-                <Box>
-                  <Typography variant="h4" fontWeight={600} sx={{ lineHeight: 1.2 }}>
-                    {translation.cardBrandName}
-                  </Typography>
-                  <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
-                    {translation.cardBrandTagline}
-                  </Typography>
-                </Box>
-              </Box>
 
-              <Box
-                sx={{
-                  mt: 2,
-                  p: 2,
-                  border: '2px solid rgba(255,255,255,0.3)',
-                  borderRadius: 2,
-                  fontFamily: 'monospace',
-                  fontSize: '0.75rem',
-                  lineHeight: 1.2,
-                  whiteSpace: 'pre',
-                  textAlign: 'center',
-                  overflow: 'auto',
-                  backgroundColor: 'rgba(0,0,0,0.1)',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                {`+========================================+
+                <Box
+                  sx={{
+                    mt: 2,
+                    p: 2,
+                    border: '2px solid rgba(255,255,255,0.3)',
+                    borderRadius: 2,
+                    fontFamily: 'monospace',
+                    fontSize: '0.75rem',
+                    lineHeight: 1.2,
+                    whiteSpace: 'pre',
+                    textAlign: 'center',
+                    overflow: 'auto',
+                    backgroundColor: 'rgba(0,0,0,0.1)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {`+========================================+
 |%%%%%%%  NATIONAL RESERVE NOTE  %%%%%%%%|
 |%(1)  THE UNITED STATES OF KICSLAND (1)%|
 |%$$              ___       ********  $$%|
@@ -322,198 +344,199 @@ export default function LoginPage() {
 |%(1)          ---m-m---             (1)%|
 |%%~~~~~~~~~~~ ONE DOLLAR ~~~~~~~~~~~~~%%|
 +========================================+`}
+                </Box>
               </Box>
-            </Box>
 
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              sx={{
-                flex: '1 1 100%',
-                minWidth: 0,
-                maxWidth: '100%',
-                py: { xs: 3, md: 4 },
-                px: { xs: 3, md: 4 },
-                '@media (min-width:1024px)': {
-                  flex: '1 1 45%',
-                  maxWidth: '45%',
-                },
-              }}
-            >
-              <Typography
-                variant="h6"
-                color="primary.main"
-                textAlign="center"
-                gutterBottom
-                sx={{ mb: 3 }}
+              <Box
+                component="form"
+                onSubmit={handleSubmit}
+                sx={{
+                  flex: '1 1 100%',
+                  minWidth: 0,
+                  maxWidth: '100%',
+                  py: { xs: 3, md: 4 },
+                  px: { xs: 3, md: 4 },
+                  '@media (min-width:1024px)': {
+                    flex: '1 1 45%',
+                    maxWidth: '45%',
+                  },
+                }}
               >
-                {translation.heroPrompt}
-              </Typography>
-
-              <Stack spacing={3}>
-                <TextField
-                  label={translation.userIdLabel}
-                  value={formData.userId}
-                  onChange={handleInputChange('userId')}
-                  error={!!fieldErrors.userId}
-                  helperText={
-                    fieldErrors.userId
-                      ? translation.validations[fieldErrors.userId]
-                      : translation.helperMaxChars
-                  }
-                  disabled={isLoading}
-                  autoFocus
-                  inputProps={{
-                    maxLength: 8,
-                    style: { textTransform: 'uppercase' },
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Person color="primary" />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 2,
-                    },
-                  }}
-                />
-
-                <TextField
-                  label={translation.passwordLabel}
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.password}
-                  onChange={handleInputChange('password')}
-                  error={!!fieldErrors.password}
-                  helperText={
-                    fieldErrors.password
-                      ? translation.validations[fieldErrors.password]
-                      : translation.helperMaxChars
-                  }
-                  disabled={isLoading}
-                  autoComplete="current-password"
-                  inputProps={{
-                    maxLength: 8,
-                    style: { textTransform: 'uppercase' },
-                  }}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Lock color="primary" />
-                      </InputAdornment>
-                    ),
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword(!showPassword)}
-                          edge="end"
-                          disabled={isLoading}
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 2,
-                    },
-                  }}
-                />
-
-                {(authError || hasFieldErrors) && (
-                  <>
-                    {authError ? (
-                      <Alert
-                        severity="error"
-                        onClose={handleAlertClose}
-                        sx={{ borderRadius: 2 }}
-                      >
-                        {getErrorMessage(authError)}
-                      </Alert>
-                    ) : (
-                      <Alert
-                        severity="error"
-                        sx={{ borderRadius: 2 }}
-                      >
-                        {translation.correctionAlert}
-                      </Alert>
-                    )}
-                  </>
-                )}
-
-                <Button
-                  type="submit"
-                  variant="contained"
-                  size="large"
-                  disabled={isLoading}
-                  startIcon={<LoginIcon />}
-                  sx={{
-                    py: 1.5,
-                    borderRadius: 2,
-                    fontWeight: 600,
-                    fontSize: '1rem',
-                    background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                    color: theme.palette.primary.contrastText,
-                    border: 'none',
-                    '&:hover': {
-                      background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.secondary.main, 0.9)})`,
-                      boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.3)}`,
-                    },
-                    '&:active': {
-                      background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.8)}, ${alpha(theme.palette.secondary.main, 0.8)})`,
-                    },
-                    '&:disabled': {
-                      background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.5)}, ${alpha(theme.palette.secondary.main, 0.5)})`,
-                      color: alpha(theme.palette.primary.contrastText, 0.7),
-                    },
-                  }}
-                >
-                  {isLoading ? translation.buttonLoading : translation.buttonLabel}
-                </Button>
-
                 <Typography
-                  variant="body2"
-                  color="text.secondary"
+                  variant="h6"
+                  color="primary.main"
                   textAlign="center"
+                  gutterBottom
+                  sx={{ mb: 3 }}
                 >
-                  {translation.footerText}
+                  {translation.heroPrompt}
                 </Typography>
-              </Stack>
 
-              <Divider sx={{ my: 3 }} />
+                <Stack spacing={3}>
+                  <TextField
+                    label={translation.userIdLabel}
+                    value={formData.userId}
+                    onChange={handleInputChange('userId')}
+                    error={!!fieldErrors.userId}
+                    helperText={
+                      fieldErrors.userId
+                        ? translation.validations[fieldErrors.userId]
+                        : translation.helperMaxChars
+                    }
+                    disabled={isLoading}
+                    autoFocus
+                    inputProps={{
+                      maxLength: 8,
+                      style: { textTransform: 'uppercase' },
+                    }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Person color="primary" />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2,
+                      },
+                    }}
+                  />
 
-              <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {translation.sampleTitle}
-                </Typography>
-                <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap">
-                  <Typography variant="caption" sx={{ 
-                    bgcolor: 'warning.main', 
-                    color: 'warning.contrastText',
-                    px: 1,
-                    py: 0.5,
-                    borderRadius: 1,
-                  }}>
-                    {translation.sampleAdmin}
-                  </Typography>
-                  <Typography variant="caption" sx={{ 
-                    bgcolor: 'success.main', 
-                    color: 'success.contrastText',
-                    px: 1,
-                    py: 0.5,
-                    borderRadius: 1,
-                  }}>
-                    {translation.sampleBackOffice}
+                  <TextField
+                    label={translation.passwordLabel}
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={handleInputChange('password')}
+                    error={!!fieldErrors.password}
+                    helperText={
+                      fieldErrors.password
+                        ? translation.validations[fieldErrors.password]
+                        : translation.helperMaxChars
+                    }
+                    disabled={isLoading}
+                    autoComplete="current-password"
+                    inputProps={{
+                      maxLength: 8,
+                      style: { textTransform: 'uppercase' },
+                    }}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Lock color="primary" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={() => setShowPassword(!showPassword)}
+                            edge="end"
+                            disabled={isLoading}
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2,
+                      },
+                    }}
+                  />
+
+                  {(authError || hasFieldErrors) && (
+                    <>
+                      {authError ? (
+                        <Alert
+                          severity="error"
+                          onClose={handleAlertClose}
+                          sx={{ borderRadius: 2 }}
+                        >
+                          {getErrorMessage(authError)}
+                        </Alert>
+                      ) : (
+                        <Alert
+                          severity="error"
+                          sx={{ borderRadius: 2 }}
+                        >
+                          {translation.correctionAlert}
+                        </Alert>
+                      )}
+                    </>
+                  )}
+
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    disabled={isLoading}
+                    startIcon={<LoginIcon />}
+                    sx={{
+                      py: 1.5,
+                      borderRadius: 2,
+                      fontWeight: 600,
+                      fontSize: '1rem',
+                      background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                      color: theme.palette.primary.contrastText,
+                      border: 'none',
+                      '&:hover': {
+                        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.9)}, ${alpha(theme.palette.secondary.main, 0.9)})`,
+                        boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.3)}`,
+                      },
+                      '&:active': {
+                        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.8)}, ${alpha(theme.palette.secondary.main, 0.8)})`,
+                      },
+                      '&:disabled': {
+                        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.5)}, ${alpha(theme.palette.secondary.main, 0.5)})`,
+                        color: alpha(theme.palette.primary.contrastText, 0.7),
+                      },
+                    }}
+                  >
+                    {isLoading ? translation.buttonLoading : translation.buttonLabel}
+                  </Button>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    textAlign="center"
+                  >
+                    {translation.footerText}
                   </Typography>
                 </Stack>
+
+                <Divider sx={{ my: 3 }} />
+
+                <Box sx={{ textAlign: 'center' }}>
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
+                    {translation.sampleTitle}
+                  </Typography>
+                  <Stack direction="row" spacing={2} justifyContent="center" flexWrap="wrap">
+                    <Typography variant="caption" sx={{ 
+                      bgcolor: 'warning.main', 
+                      color: 'warning.contrastText',
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                    }}>
+                      {translation.sampleAdmin}
+                    </Typography>
+                    <Typography variant="caption" sx={{ 
+                      bgcolor: 'success.main', 
+                      color: 'success.contrastText',
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                    }}>
+                      {translation.sampleBackOffice}
+                    </Typography>
+                  </Stack>
+                </Box>
               </Box>
             </Box>
-          </Box>
 
-        </Paper>
+          </Paper>
+        </Box>
       </Box>
     </Container>
   );
