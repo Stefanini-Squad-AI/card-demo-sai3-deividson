@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguridad y Autenticación - Guía de Desarrollo de User Stories</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; background-color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; }
+        .header h1 { margin: 0 0 10px 0; font-size: 2.5em; }
+        .section h2 { color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 10px; margin-bottom: 20px; }
+        .card { background: #f8f9fa; border-left: 4px solid #667eea; padding: 20px; margin: 15px 0; border-radius: 4px; }
+        .story-example { background: #e8f4f8; border-left: 4px solid #4ecdc4; padding: 15px; margin: 10px 0; font-style: italic; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 20px; border-radius: 4px; overflow-x: auto; }
+        .complexity-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: bold; margin-right: 10px; }
+        .simple { background: #d4edda; color: #155724; }
+        .medium { background: #fff3cd; color: #856404; }
+        .complex { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🔐 Seguridad y Autenticación</h1>
+            <p>Guía de Desarrollo de User Stories - CardDemo Legacy System</p>
+        </header>
+        <section class="section">
+            <h2>📋 Resumen del Módulo</h2>
+            <div class="card">
+                <p><strong>ID:</strong> <code>security-auth</code></p>
+                <p><strong>Propósito:</strong> Gestionar autenticación y control de acceso al sistema CardDemo</p>
+                <p><strong>Programas COBOL:</strong> COSGN00C, COUSR00C-03C</p>
+                <p><strong>Archivo Principal:</strong> USRSEC (VSAM KSDS, 80 bytes)</p>
+            </div>
+        </section>
+        <section class="section">
+            <h2>🎯 Templates de User Stories</h2>
+            <div class="story-example">Como usuario del sistema, quiero iniciar sesión con User ID y Password para acceder al sistema CardDemo.</div>
+            <div class="story-example">Como administrador, quiero crear nuevos usuarios con tipos ADMIN/USER/GUEST para controlar accesos.</div>
+        </section>
+        <footer style="margin-top:50px;padding-top:20px;border-top:1px solid #ddd;text-align:center;">
+            <p><a href="../../index.html">← Volver al Índice</a> | <em>Actualizado: 2026-03-06</em></p>
+        </footer>
+    </div>
+</body>
+</html>

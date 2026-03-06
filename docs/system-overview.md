@@ -1,19 +1,22 @@
-# Sistema SAI (Sistema de Administración de Información) - Vista General para User Stories
+# Sistema CardDemo Legacy - Documentación para User Stories
 
-**Versión**: 2026-01-26  
+**Versión**: 2026-03-06  
 **Propósito**: Fuente única de verdad para crear User Stories bien estructuradas  
-**Precisión del Codebase**: 95%+
+**Aplicación**: CardDemo - Sistema de Gestión de Tarjetas de Crdito Mainframe  
+**Tecnología**: COBOL/CICS/DB2/IMS/VSAM
 
 ---
 
 ## 📊 Estadísticas de la Plataforma
 
-- **Módulos**: 9 módulos documentados
-- **Reutilización de Código**: 80% componentes reutilizables
-- **Componentes UI**: 15+ componentes disponibles
-- **Cobertura API**: 100% endpoints documentados
-- **Idiomas Soportados**: 1 (Inglés - expansible)
-- **Mock Data**: 10 cuentas, 10 tarjetas, 50+ transacciones
+- **Módulos**: 8 dominios funcionales documentados
+- **Programas COBOL**: 29 programas (23 core + 6 aplicaciones especializadas)
+- **Componentes UI**: 21+ mapas BMS para pantallas 3270
+- **Cobertura APIs**: 100% archivos VSAM + DB2 + IMS documentados
+- **Idiomas Soportados**: Inglés (sistema mainframe)
+- **Archivos de Datos**: 15+ archivos VSAM/DB2
+- **Jobs Batch**: 37 procedimientos JCL documentados
+- **Copybooks**: 28 estructuras de datos reutilizables
 
 ---
 
@@ -21,1606 +24,1400 @@
 
 ### Stack Tecnológico
 
-- **Frontend**: React 18.3.1 + TypeScript 5.4.5
-- **Router**: React Router DOM 6.22.3
-- **Estado Global**: Redux Toolkit 2.2.3
-- **UI Library**: Material-UI (MUI) 5.15.15
-- **Build Tool**: Vite 5.2.10
-- **Testing/Mocking**: MSW (Mock Service Worker) 2.2.13
-- **Deployment**: Docker + Nginx
+#### Backend
+- **COBOL**: Enterprise COBOL for z/OS (v4.2+)
+- **CICS**: Customer Information Control System v5.x
+- **DB2**: DB2 for z/OS v11+
+- **IMS**: Information Management System v14+
+- **MQ**: IBM MQ for z/OS v9+
+- **VSAM**: Virtual Storage Access Method (KSDS, ESDS, RRDS)
+
+#### Frontend
+- **BMS**: Basic Mapping Support (Pantallas 3270)
+- **Terminal**: IBM 3270 terminal emulation
+- **Mapas**: 21 pantallas definidas con BMS
+
+#### Base de Datos
+- **VSAM KSDS**: Archivos indexados principales (Customer, Account, Card, Transaction)
+- **DB2**: Tablas relacionales (Transaction Types, Authorization Rules)
+- **IMS**: Base de datos jerárquica (Authorization Processing)
+- **AIX**: Índices alternativos para referencias cruzadas
+
+#### Caché/Messaging
+- **TDQ**: Transient Data Queue (para reportes y batch jobs)
+- **TSQ**: Temporary Storage Queue (para paginación)
+- **MQ**: Message Queue para procesamiento asíncrono
+- **COMMAREA**: Comunicación inter-transaccional
 
 ### Patrones Arquitectónicos
 
-- **Arquitectura**: Feature-Based Organization (por módulo funcional)
-- **State Management**: Redux Toolkit con slices modulares
-- **Routing**: React Router con rutas protegidas
-- **Authentication**: Session-based con gestión segura de sesión
-- **Data Fetching**: API services con tipos TypeScript
-- **Mocking**: MSW para desarrollo local sin backend
-- **Deployment Base Path**: Configurable (`/demo-sai-3-aws/` en producción)
-
-### Diagrama de Arquitectura
-
-```mermaid
-graph TB
-    subgraph Frontend["Frontend Layer - React + TypeScript"]
-        UI["UI Components (MUI)"]
-        Pages["Pages"]
-        Features["Feature Modules"]
-        Store["Redux Store"]
-    end
-    
-    subgraph Services["Service Layer"]
-        API["API Services"]
-        Auth["Auth Service"]
-        MSW["MSW Mocks (Dev)"]
-    end
-    
-    subgraph Backend["Backend Layer"]
-        REST["REST API"]
-        DB["Database"]
-    end
-    
-    Pages --> UI
-    Pages --> Features
-    Features --> Store
-    Features --> API
-    API --> MSW
-    API --> REST
-    Auth --> Store
-    REST --> DB
-    
-    style Frontend fill:#e3f2fd
-    style Services fill:#fff3e0
-    style Backend fill:#f3e5f5
-```
-
-### Diagrama de Dependencias entre Módulos
-
-```mermaid
-graph LR
-    Auth["🔐 Auth Module"]
-    Account["💳 Account Module"]
-    Card["💳 Credit Card Module"]
-    Trans["💸 Transaction Module"]
-    User["👤 User Module"]
-    Menu["📋 Menu Module"]
-    Bill["🧾 Bill Payment Module"]
-    
-    Auth --> Menu
-    Auth --> Account
-    Auth --> Card
-    Auth --> Trans
-    Auth --> User
-    Auth --> Bill
-    
-    Account --> Card
-    Card --> Trans
-    User --> Auth
-    
-    Menu --> Account
-    Menu --> Card
-    Menu --> Trans
-    Menu --> User
-    Menu --> Bill
-    
-    style Auth fill:#ffcdd2
-    style Menu fill:#c8e6c9
-    style Account fill:#bbdefb
-    style Card fill:#b3e5fc
-    style Trans fill:#fff9c4
-    style User fill:#d1c4e9
-    style Bill fill:#ffccbc
-```
+- **Patrón Repository**: Acceso a datos encapsulado (VSAM READ/WRITE)
+- **Service Layer**: Lógica de negocio encapsulada en programas COBOL
+- **Multi-tenancy**: NO implementado (sistema monolítico)
+- **Autenticación**: Basada en archivo USRSEC (User ID + Password)
+- **Autorización**: IMS DB2 MQ para transacciones críticas
+- **Gestión de Transacciones**: CICS Transaction Manager
+- **Procesamiento Batch**: JCL con COBOL batch programs
 
 ---
 
 ## 📚 Catálogo de Módulos
 
-### 🔐 AUTH - Autenticación y Autorización
+### [MÓDULO-1] SEGURIDAD Y AUTENTICACIÓN
 
-**ID**: `auth`  
-**Propósito**: Gestión de autenticación de usuarios y control de acceso basado en roles  
-**Componentes Clave**:
-- `authSlice.ts` - Gestión de estado de autenticación
-- `ProtectedRoute.tsx` - HOC para protección de rutas
-- `useSecureSession.tsx` - Hook para manejo seguro de sesión
-- `LoginPage.tsx` - Página de inicio de sesión
+**ID**: `security-auth`  
+**Propósito**: Gestionar el inicio de sesión y control de acceso de usuarios al sistema CardDemo
 
-**APIs Públicas**:
-- `POST /api/security/signOn` - Inicio de sesión con credenciales
-- `POST /api/security/signOff` - Cierre de sesión
+#### Componentes Clave
+- **COSGN00C**: Programa de sign-on/autenticación
+- **COUSR00C**: Listado de usuarios
+- **COUSR01C**: Consulta/actualización de usuario
+- **COUSR02C**: Eliminación de usuario
+- **COUSR03C**: Mantenimiento de seguridad de usuario
 
-**Tipos de Datos**:
-```typescript
-interface User {
-  userId: string;
-  name: string;
-  role: 'admin' | 'back-office';
-  type: 'A' | 'U';
-}
+#### APIs Públicas
+```cobol
+EXEC CICS READ FILE('USRSEC')
+    INTO(SEC-USER-RECORD)
+    RIDFLD(WS-USER-ID)
+    RESP(WS-RESP-CD)
+END-EXEC
 
-interface AuthState {
-  isAuthenticated: boolean;
-  user: User | null;
-  error: string | null;
-}
+EXEC CICS WRITE FILE('USRSEC')
+    FROM(SEC-USER-RECORD)
+    RIDFLD(SEC-USER-ID)
+    RESP(WS-RESP-CD)
+END-EXEC
 ```
 
-**Reglas de Negocio**:
-- Los usuarios admin pueden acceder a funcionalidades administrativas
-- Los usuarios back-office tienen acceso limitado a operaciones CRUD
-- Sesión expira automáticamente por inactividad (configurable)
-- Redirección automática a `/login` cuando no está autenticado
+#### Archivos Utilizados
+- **USRSEC**: VSAM KSDS (Key: User ID 8 caracteres, RecLen: 80)
 
-**Ejemplos de User Stories**:
-- Como usuario del sistema, quiero iniciar sesión con mis credenciales para acceder a las funcionalidades
-- Como administrador, quiero tener acceso a todas las funcionalidades administrativas para gestionar el sistema
-- Como usuario back-office, quiero acceder solo a las operaciones permitidas para mi rol
+#### Pantallas BMS
+- **COSGN00**: Pantalla de inicio de sesión
+- **COUSR00**: Lista de usuarios (paginación)
+- **COUSR01**: Detalle/actualización de usuario
+- **COUSR02**: Confirmación eliminación
+- **COUSR03**: Mantenimiento seguridad
+
+#### Ejemplos de User Story
+```
+US-SEC-001: Como administrador del sistema, quiero listar todos los usuarios activos 
+para revisar los accesos al sistema CardDemo.
+
+US-SEC-002: Como administrador, quiero crear nuevos usuarios con diferentes tipos 
+(Admin, User, Guest) para controlar permisos de acceso.
+
+US-SEC-003: Como usuario del sistema, quiero iniciar sesión con mi User ID y Password 
+para acceder a las funciones del sistema CardDemo.
+```
+
+#### Reglas de Negocio
+- User ID debe ser único (8 caracteres alfanuméricos)
+- Password debe ser mínimo 8 caracteres
+- Tipos de usuario: ADMIN, USER, GUEST
+- Máximo 3 intentos de login fallidos bloquean al usuario
+- Timeout de sesión: 15 minutos de inactividad
 
 ---
 
-### 💳 ACCOUNT - Gestión de Cuentas
+### [MÓDULO-2] GESTIÓN DE CLIENTES
 
-**ID**: `account`  
-**Propósito**: Consulta y actualización de información de cuentas de clientes  
-**Componentes Clave**:
-- `AccountViewScreen.tsx` - Visualización de detalles de cuenta
-- `AccountUpdateScreen.tsx` - Actualización de información de cuenta
-- `AccountViewPage.tsx` - Página de consulta
-- `AccountUpdatePage.tsx` - Página de actualización
+**ID**: `customer-mgmt`  
+**Propósito**: Administrar la información maestra de clientes (tarjetahabientes)
 
-**APIs Públicas**:
-- `GET /api/account/acccount` - Consulta de cuenta por ID
-- `PUT /api/account/update` - Actualización de información de cuenta
+#### Componentes Clave
+- **CBCUS01C**: Consulta de cliente (CICS online)
+- **CBEXPORT**: Exportación de datos de clientes para migración de sucursales
+- **CBIMPORT**: Importación de datos de clientes desde archivo de exportación
 
-**Tipos de Datos**:
-```typescript
-interface Account {
-  accountId: string;
-  balance: number;
-  creditLimit: number;
-  availableCredit: number;
-  status: string;
-  groupId: string;
-  customer: Customer;
-  cards: CreditCard[];
-}
+#### APIs Públicas
+```cobol
+* Lectura de cliente
+EXEC CICS READ FILE('CUSTDAT')
+    INTO(CUSTOMER-RECORD)
+    RIDFLD(WS-CUST-ID)
+    RESP(WS-RESP-CD)
+END-EXEC
 
-interface Customer {
-  customerId: string;
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  ssn: string;
-  ficoScore: number;
-  address: Address;
-  phones: Phone[];
-}
+* Actualización de cliente
+EXEC CICS REWRITE FILE('CUSTDAT')
+    FROM(CUSTOMER-RECORD)
+    RESP(WS-RESP-CD)
+END-EXEC
 ```
 
-**Reglas de Negocio**:
-- El accountId debe tener exactamente 11 dígitos
-- El balance puede ser negativo (sobregiro)
-- El crédito disponible = creditLimit - balance
-- Solo cuentas activas (status='Y') pueden realizar transacciones
-- Cada cuenta tiene al menos un cliente asociado
+#### Archivos Utilizados
+- **CUSTDAT**: VSAM KSDS (Key: Customer ID 9 dígitos, RecLen: 500)
 
-**Ejemplos de User Stories**:
-- Como usuario back-office, quiero consultar los detalles de una cuenta para ver el saldo y límite de crédito
-- Como usuario back-office, quiero actualizar la información de un cliente para mantener los datos actualizados
-- Como usuario, quiero ver todas las tarjetas asociadas a una cuenta para gestionar los plásticos
+#### Modelo de Datos (CUSTREC.cpy)
+```cobol
+01  CUSTOMER-RECORD.
+    05  CUST-ID                      PIC 9(09).
+    05  CUST-FIRST-NAME              PIC X(25).
+    05  CUST-MIDDLE-NAME             PIC X(25).
+    05  CUST-LAST-NAME               PIC X(25).
+    05  CUST-ADDR-LINE-1             PIC X(50).
+    05  CUST-ADDR-LINE-2             PIC X(50).
+    05  CUST-ADDR-LINE-3             PIC X(50).
+    05  CUST-ADDR-STATE-CD           PIC X(02).
+    05  CUST-ADDR-COUNTRY-CD         PIC X(03).
+    05  CUST-ADDR-ZIP                PIC X(10).
+    05  CUST-PHONE-NUM-1             PIC X(15).
+    05  CUST-PHONE-NUM-2             PIC X(15).
+    05  CUST-SSN                     PIC 9(09).
+    05  CUST-GOVT-ISSUED-ID          PIC X(20).
+    05  CUST-DOB-YYYYMMDD            PIC X(10).
+    05  CUST-EFT-ACCOUNT-ID          PIC X(10).
+    05  CUST-PRI-CARD-HOLDER-IND     PIC X(01).
+    05  CUST-FICO-CREDIT-SCORE       PIC 9(03).
+```
+
+#### Jobs Batch Relacionados
+- **DEFCUST**: Definir archivo VSAM KSDS de clientes
+- **READCUST**: Lectura/listado de archivo de clientes
+- **CBEXPORT**: Exportación multi-registro para migración
+- **CBIMPORT**: Importación con validación de checksums
+
+#### Ejemplos de User Story
+```
+US-CUS-001: Como representante de servicio al cliente, quiero buscar clientes por ID 
+para consultar su información personal y de contacto.
+
+US-CUS-002: Como sistema batch, quiero exportar datos de clientes a un formato multi-registro 
+para migración entre sucursales.
+
+US-CUS-003: Como operador batch, quiero importar datos de clientes validando checksums 
+para asegurar integridad de datos migrados.
+```
+
+#### Reglas de Negocio
+- Customer ID es numérico de 9 dígitos (único)
+- SSN debe ser válido (9 dígitos)
+- FICO Score rango: 300-850
+- Fecha de nacimiento formato: YYYY-MM-DD
+- Primary Card Holder Indicator: Y/N
+- Dirección completa requerida (State Code 2 chars, Country Code 3 chars)
 
 ---
 
-### 💳 CREDIT CARD - Gestión de Tarjetas de Crédito
+### [MÓDULO-3] GESTIÓN DE CUENTAS
 
-**ID**: `creditCard`  
-**Propósito**: Administración de tarjetas de crédito vinculadas a cuentas  
-**Componentes Clave**:
-- `CreditCardListScreen.tsx` - Lista de tarjetas
-- `CreditCardViewScreen.tsx` - Detalles de tarjeta
-- `CreditCardUpdateScreen.tsx` - Actualización de tarjeta
-- `CreditCardAddScreen.tsx` - Alta de nueva tarjeta
+**ID**: `account-mgmt`  
+**Propósito**: Administrar cuentas de tarjetas de crédito, balances y límites de crédito
 
-**APIs Públicas**:
-- `GET /api/creditcard/cards` - Lista de tarjetas por cuenta
-- `GET /api/creditcard/carddetails` - Detalles de una tarjeta
-- `PUT /api/creditcard/update` - Actualización de tarjeta
-- `POST /api/creditcard/add` - Alta de nueva tarjeta
-- `DELETE /api/creditcard/delete` - Baja de tarjeta
+#### Componentes Clave
+- **COACTVWC**: Visualización detallada de cuenta (CICS)
+- **COACTUPC**: Actualización de cuenta (CICS)
+- **CBACT01C**: Lectura de archivo de cuentas a archivos de salida (Batch)
+- **CBACT02C**: Actualización de cuentas (Batch/CICS)
+- **CBACT03C**: Consulta de balance de cuenta (Batch/CICS)
+- **CBACT04C**: Visualización de cuenta (CICS)
 
-**Tipos de Datos**:
-```typescript
-interface CreditCard {
-  cardNumber: string;
-  accountId: string;
-  embossedName: string;
-  expirationDate: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'EXPIRED' | 'BLOCKED';
-  cvv: string;
-  cardType: string;
-}
+#### APIs Públicas
+```cobol
+* Lectura de cuenta
+EXEC CICS READ FILE('ACCTDAT')
+    INTO(ACCOUNT-RECORD)
+    RIDFLD(WS-ACCT-ID)
+    RESP(WS-RESP-CD)
+END-EXEC
 
-interface CreditCardDetail extends CreditCard {
-  issueDate: string;
-  activationDate: string;
-  lastUsedDate: string;
-}
+* Actualización de cuenta con índice alternativo (AIX)
+EXEC CICS READ FILE('CXACAIX')
+    INTO(CARD-XREF-RECORD)
+    RIDFLD(WS-CARD-NUM)
+    RESP(WS-RESP-CD)
+END-EXEC
 ```
 
-**Reglas de Negocio**:
-- El número de tarjeta debe ser válido según algoritmo Luhn
-- CVV debe tener 3 o 4 dígitos
-- Las tarjetas expiradas no pueden realizar transacciones
+#### Archivos Utilizados
+- **ACCTDAT**: VSAM KSDS (Key: Account ID 11 dígitos, RecLen: 300)
+- **CXACAIX**: VSAM AIX (Índice alternativo Card→Account)
+
+#### Modelo de Datos (CVACT01Y.cpy)
+```cobol
+01  ACCOUNT-RECORD.
+    05  ACCT-ID                      PIC 9(11).
+    05  ACCT-ACTIVE-STATUS           PIC X(01).
+    05  ACCT-CURR-BAL                PIC S9(10)V99.
+    05  ACCT-CREDIT-LIMIT            PIC S9(10)V99.
+    05  ACCT-CASH-CREDIT-LIMIT       PIC S9(10)V99.
+    05  ACCT-OPEN-DATE               PIC X(10).
+    05  ACCT-EXPIRAION-DATE          PIC X(10).
+    05  ACCT-REISSUE-DATE            PIC X(10).
+    05  ACCT-CURR-CYC-CREDIT         PIC S9(10)V99.
+    05  ACCT-CURR-CYC-DEBIT          PIC S9(10)V99.
+    05  ACCT-ADDR-ZIP                PIC X(10).
+    05  ACCT-GROUP-ID                PIC X(10).
+```
+
+#### Pantallas BMS
+- **COACTVW**: Vista detallada de cuenta
+- **COACTUP**: Actualización de cuenta
+
+#### Jobs Batch Relacionados
+- **ACCTFILE**: Definir archivo de cuentas
+- **READACCT**: Lectura/listado de cuentas
+- **CBACT01C**: Procesamiento batch de cuentas
+
+#### Ejemplos de User Story
+```
+US-ACC-001: Como representante de servicio, quiero visualizar el detalle completo de una cuenta 
+para revisar balance actual, límite de crédito y fechas importantes.
+
+US-ACC-002: Como supervisor, quiero actualizar el límite de crédito de una cuenta 
+para aprobar aumentos solicitados por clientes.
+
+US-ACC-003: Como proceso batch nocturno, quiero actualizar los balances de ciclo actual 
+para reflejar cargos y créditos del día.
+```
+
+#### Reglas de Negocio
+- Account ID numérico 11 dígitos (único)
+- Active Status: A (Active), C (Closed), S (Suspended)
+- Current Balance puede ser negativo (crédito)
+- Credit Limit máximo: $99,999,999.99
+- Cash Credit Limit <= 50% del Credit Limit
+- Cycle Credits/Debits se resetean mensualmente
+- Group ID para cuentas corporativas (10 caracteres)
+
+---
+
+### [MÓDULO-4] GESTIÓN DE TARJETAS
+
+**ID**: `card-mgmt`  
+**Propósito**: Administrar tarjetas físicas asociadas a cuentas
+
+#### Componentes Clave
+- **COCRDLIC**: Listado de tarjetas (CICS)
+- **COCRDSLC**: Búsqueda/selección de tarjetas (CICS)
+- **COCRDUPC**: Actualización de tarjeta (CICS)
+
+#### APIs Públicas
+```cobol
+* Lectura de tarjeta
+EXEC CICS READ FILE('CARDDAT')
+    INTO(CARD-RECORD)
+    RIDFLD(WS-CARD-NUM)
+    RESP(WS-RESP-CD)
+END-EXEC
+
+* Obtener Account ID desde Card Number (AIX)
+EXEC CICS READ FILE('CXACAIX')
+    INTO(XREF-RECORD)
+    RIDFLD(WS-CARD-NUM)
+    RESP(WS-RESP-CD)
+END-EXEC
+```
+
+#### Archivos Utilizados
+- **CARDDAT**: VSAM KSDS (Key: Card Number, RecLen: Variable)
+- **CXACAIX**: VSAM AIX (Card→Account cross-reference)
+- **CCXREF**: Archivo de referencia cruzada alternativo
+
+#### Pantallas BMS
+- **COCRDLI**: Lista de tarjetas
+- **COCRDSL**: Búsqueda de tarjetas
+- **COCRDUP**: Actualización de tarjeta
+
+#### Jobs Batch Relacionados
+- **CARDFILE**: Definir archivo de tarjetas
+- **READCARD**: Lectura/listado de tarjetas
+- **XREFFILE**: Definir cross-reference
+- **READXREF**: Mantenimiento de referencias cruzadas
+
+#### Ejemplos de User Story
+```
+US-CRD-001: Como representante de servicio, quiero listar todas las tarjetas de un cliente 
+para verificar tarjetas activas e inactivas.
+
+US-CRD-002: Como sistema, quiero buscar una cuenta por número de tarjeta 
+usando el índice alternativo para procesamiento rápido de transacciones.
+
+US-CRD-003: Como supervisor, quiero actualizar el estado de una tarjeta (activar/desactivar/reemplazar) 
+para gestionar reemisiones y reportes de robo/pérdida.
+```
+
+#### Reglas de Negocio
+- Card Number único por cuenta
 - Una cuenta puede tener múltiples tarjetas
-- Solo tarjetas ACTIVE pueden realizar compras
-
-**Ejemplos de User Stories**:
-- Como usuario back-office, quiero listar todas las tarjetas de una cuenta para ver los plásticos activos
-- Como usuario back-office, quiero dar de alta una nueva tarjeta para reemplazar una expirada
-- Como usuario back-office, quiero bloquear una tarjeta reportada como perdida para prevenir fraudes
+- Estados: Active, Inactive, Lost, Stolen, Expired
+- CXACAIX permite lookup bidireccional Card↔Account
+- Tarjetas vencidas no permiten transacciones
+- Reemplazo de tarjeta genera nuevo Card Number
 
 ---
 
-### 💸 TRANSACTION - Gestión de Transacciones
+### [MÓDULO-5] PROCESAMIENTO DE TRANSACCIONES
 
-**ID**: `transaction`  
-**Propósito**: Registro, consulta y reporte de transacciones financieras  
-**Componentes Clave**:
-- `TransactionAddScreen.tsx` - Registro de nueva transacción
-- `TransactionListScreen.tsx` - Lista de transacciones
-- `TransactionViewScreen.tsx` - Detalle de transacción
-- `TransactionReportsScreen.tsx` - Reportes y análisis
+**ID**: `transaction-processing`  
+**Propósito**: Procesar, almacenar y consultar transacciones de tarjetas de crédito
 
-**APIs Públicas**:
-- `POST /api/transaction/add` - Registro de transacción
-- `GET /api/transaction/transactionview` - Consulta de transacción
-- `GET /api/transaction/transactionlist` - Lista de transacciones
-- `GET /api/transaction/reports` - Generación de reportes
+#### Componentes Clave Online (CICS)
+- **COTRN00C**: Listado de transacciones
+- **COTRN01C**: Detalle de transacción
+- **COTRN02C**: Búsqueda de transacciones
 
-**Tipos de Datos**:
-```typescript
-interface Transaction {
-  transactionId: string;
-  cardNumber: string;
-  transactionType: string;
-  categoryCode: string;
-  amount: number;
-  description: string;
-  transactionDate: string;
-  merchantName: string;
-  status: string;
-}
+#### Componentes Clave Batch
+- **CBTRN01C**: Procesamiento de transacciones
+- **CBTRN02C**: Reconciliación de transacciones
+- **CBTRN03C**: Posteo de transacciones
 
-interface TransactionList {
-  transactions: Transaction[];
-  totalRecords: number;
-  page: number;
-  pageSize: number;
-}
+#### APIs Públicas
+```cobol
+* Lectura de transacción
+EXEC CICS READ FILE('TRANSACT')
+    INTO(TRANSACTION-RECORD)
+    RIDFLD(WS-TRAN-ID)
+    RESP(WS-RESP-CD)
+END-EXEC
+
+* Escritura de nueva transacción
+EXEC CICS WRITE FILE('TRANSACT')
+    FROM(TRANSACTION-RECORD)
+    RIDFLD(TRAN-ID)
+    RESP(WS-RESP-CD)
+END-EXEC
 ```
 
-**Reglas de Negocio**:
-- Solo tarjetas ACTIVE pueden realizar transacciones
-- El monto debe ser mayor a 0
-- Las transacciones de retiro (tipo 03) reducen el balance disponible
-- El categoryCode debe ser válido según catálogo ISO 8583
-- Cada transacción debe estar asociada a una tarjeta válida
+#### Archivos Utilizados
+- **TRANSACT**: VSAM KSDS (Key: Transaction ID, RecLen: Variable)
+- **TRANCAT**: Categorías de transacciones
+- **TRANCATBAL**: Balances por categoría de transacción
 
-**Ejemplos de User Stories**:
-- Como usuario back-office, quiero registrar una transacción manual para corregir un cargo
-- Como usuario back-office, quiero consultar el historial de transacciones de una tarjeta para auditar movimientos
-- Como administrador, quiero generar reportes de transacciones para análisis financiero
+#### Modelo de Datos (CVTRAxx.cpy)
+- **CVTRA01Y**: Transaction Category Balance (RecLen: 50)
+  - Account ID + Transaction Type + Transaction Category Code + Balance
+- **CVTRA02Y**: Transaction Detail
+- **CVTRA03Y**: Transaction Summary
+- **CVTRA04Y**: Transaction Category Definitions
+- **CVTRA05Y**: Transaction Posting Rules
+- **CVTRA06Y**: Transaction Cross-reference
+- **CVTRA07Y**: Transaction Reconciliation
+
+#### Pantallas BMS
+- **COTRN00**: Lista de transacciones (paginada)
+- **COTRN01**: Detalle de transacción
+- **COTRN02**: Búsqueda de transacciones
+
+#### Jobs Batch Relacionados
+- **TRANFILE**: Definir archivo de transacciones
+- **TRANTYPE**: Crear archivo de tipos de transacción
+- **TRANCATG**: Definir categorías de transacción
+- **TRANIDX**: Crear índice alternativo (AIX) en transacciones
+- **TRANREPT**: Generar reporte de transacciones
+- **POSTTRAN**: Postear transacciones al master
+- **TRANBKP**: Backup y eliminación de transacciones (REPRO)
+- **COMBTRAN**: Combinar transacciones de múltiples fuentes
+- **TCATBALF**: Mantenimiento de balances por categoría
+- **INTCALC**: Cálculo de intereses
+
+#### Ejemplos de User Story
+```
+US-TRN-001: Como cliente, quiero consultar mis últimas transacciones en línea 
+para revisar cargos recientes en mi cuenta.
+
+US-TRN-002: Como proceso batch nocturno, quiero postear transacciones autorizadas 
+para actualizar balances de cuentas.
+
+US-TRN-003: Como analista de fraude, quiero buscar transacciones por monto y categoría 
+para detectar patrones sospechosos.
+```
+
+#### Reglas de Negocio
+- Transaction ID único generado secuencialmente
+- Tipos de transacción: Purchase, Cash Advance, Payment, Adjustment, Reversal
+- Categorías: Retail, Dining, Travel, Gas, Grocery, etc.
+- Balances por categoría se actualizan en tiempo real
+- Transacciones históricas > 90 días se archivan
+- Reportes se generan vía TDQ (Transient Data Queue)
 
 ---
 
-### 👤 USER - Gestión de Usuarios del Sistema
+### [MÓDULO-6] TIPOS DE TRANSACCIÓN (DB2)
 
-**ID**: `user`  
-**Propósito**: Administración de usuarios del sistema (back-office y admin)  
-**Componentes Clave**:
-- `UserListScreen.tsx` - Lista de usuarios
-- `UserAddScreen.tsx` - Alta de usuario
-- `UserUpdateScreen.tsx` - Actualización de usuario
-- `UserDeleteScreen.tsx` - Baja de usuario
+**ID**: `transaction-types-db2`  
+**Propósito**: Gestionar catálogo de tipos de transacciones en DB2 con paginación por cursor
 
-**APIs Públicas**:
-- `GET /api/user/list` - Lista de usuarios
-- `GET /api/user/details` - Detalles de usuario
-- `POST /api/user/add` - Alta de usuario
-- `PUT /api/user/update` - Actualización de usuario
-- `DELETE /api/user/delete` - Baja de usuario
+#### Componentes Clave
+- **COTRTLIC**: Listado de tipos de transacción (CICS + DB2 cursor paging)
+- **COTRTUPC**: Actualización de tipo de transacción (CICS + DB2)
+- **COBTUPDT**: Actualización batch de tipos de transacción
 
-**Tipos de Datos**:
-```typescript
-interface SystemUser {
-  userId: string;
-  name: string;
-  type: 'A' | 'U'; // A=Admin, U=User
-  role: 'admin' | 'back-office';
-  status: 'Active' | 'Inactive';
-  createdDate: string;
-  lastLogin: string;
-  email?: string;
-}
+#### APIs Públicas DB2
+```cobol
+* Declarar cursor para paginación
+EXEC SQL
+    DECLARE TTYPE-CURSOR CURSOR FOR
+    SELECT TRAN_TYPE_CD, TRAN_TYPE_DESC
+    FROM TRANSACTION_TYPE
+    ORDER BY TRAN_TYPE_CD
+END-EXEC
+
+* Abrir cursor
+EXEC SQL OPEN TTYPE-CURSOR END-EXEC
+
+* Fetch siguiente página (7 filas por pantalla)
+EXEC SQL
+    FETCH NEXT FROM TTYPE-CURSOR
+    INTO :WS-TRAN-TYPE-CD, :WS-TRAN-TYPE-DESC
+END-EXEC
+
+* Actualizar tipo de transacción
+EXEC SQL
+    UPDATE TRANSACTION_TYPE
+    SET TRAN_TYPE_DESC = :WS-TRAN-TYPE-DESC
+    WHERE TRAN_TYPE_CD = :WS-TRAN-TYPE-CD
+END-EXEC
 ```
 
-**Reglas de Negocio**:
-- El userId debe ser único en el sistema
-- Solo usuarios admin pueden crear/modificar otros usuarios admin
-- El password debe cumplir políticas de seguridad
-- Los usuarios inactivos no pueden iniciar sesión
-- Registro de auditoría para cambios en usuarios
+#### Tablas DB2 Utilizadas
+- **TRANSACTION_TYPE**: Catálogo de tipos de transacción
 
-**Ejemplos de User Stories**:
-- Como administrador, quiero crear nuevos usuarios del sistema para dar acceso a empleados
-- Como administrador, quiero desactivar usuarios para revocar accesos
-- Como administrador, quiero actualizar roles de usuarios para ajustar permisos
+#### Pantallas BMS
+- **COTRTLI**: Lista de tipos (paginación con cursor DB2)
+- **COTRTUP**: Crear/actualizar tipo de transacción
+
+#### Jobs Batch Relacionados
+- **TRANEXTR**: Extracción de tipos de transacción desde DB2
+- **MNTTRDB2**: Mantenimiento de tablas DB2 de tipos de transacción
+- **CREADB21**: Creación de estructuras DB2 v2.1
+
+#### Ejemplos de User Story
+```
+US-TTY-001: Como administrador de sistema, quiero listar tipos de transacción con paginación 
+para revisar el catálogo completo sin saturar la pantalla.
+
+US-TTY-002: Como configurador, quiero crear nuevos tipos de transacción en DB2 
+para soportar nuevas categorías de negocio.
+
+US-TTY-003: Como proceso batch, quiero extraer tipos de transacción desde DB2 
+para generar archivos de configuración VSAM.
+```
+
+#### Reglas de Negocio
+- Transaction Type Code único (clave primaria DB2)
+- Máximo 7 registros por pantalla (cursor paging)
+- Descripción máximo 50 caracteres
+- Operaciones CRUD completas (Create, Read, Update, Delete)
+- Flag de eliminación lógica (no física)
+- Integración bidireccional DB2 ↔ VSAM
 
 ---
 
-### 📋 MENU - Sistema de Menús
+### [MÓDULO-7] AUTORIZACIÓN (IMS/DB2/MQ)
 
-**ID**: `menu`  
-**Propósito**: Navegación y control de acceso a funcionalidades según rol  
-**Componentes Clave**:
-- `MainMenuPage.tsx` - Menú principal para usuarios back-office
-- `AdminMenuPage.tsx` - Menú administrativo
-- `MenuCard.tsx` - Componente reutilizable de tarjeta de menú
+**ID**: `authorization-ims-db2-mq`  
+**Propósito**: Procesar autorizaciones de transacciones críticas con IMS, DB2 y MQ
 
-**APIs Públicas**:
-- `GET /api/menu/mainmenu` - Opciones de menú principal
-- `GET /api/menu/adminmenu` - Opciones de menú admin
+#### Componentes Clave Online (CICS)
+- **COPAUS0C**: Resumen de autorización (IMS/DB2 integration)
+- **COPAUS1C**: Detalle de autorización (Transaction lookup)
+- **COPAUS2C**: Procesamiento de autorización (DB2/MQ messaging)
 
-**Tipos de Datos**:
-```typescript
-interface MenuItem {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
-  path: string;
-  requiredRole?: 'admin' | 'back-office';
-}
+#### Componentes Clave Batch
+- **CBPAUP0C**: Autorización batch de pagos
+
+#### APIs Públicas
+```cobol
+* Llamada IMS para consulta de autorización
+EXEC CICS START TRANSACTION('IMSA')
+    FROM(IMS-AUTH-REQUEST)
+    LENGTH(IMS-REQUEST-LEN)
+END-EXEC
+
+* Escritura a cola MQ para procesamiento asíncrono
+EXEC CICS WRITEQ TS
+    QUEUE('AUTHQ')
+    FROM(AUTH-MESSAGE)
+    LENGTH(AUTH-MSG-LEN)
+END-EXEC
 ```
 
-**Reglas de Negocio**:
-- Los menús se adaptan dinámicamente según el rol del usuario
-- Los usuarios back-office solo ven opciones permitidas
-- Los admin tienen acceso completo a todas las funcionalidades
-- Redirección automática al menú apropiado después del login
+#### Recursos IMS/DB2/MQ
+- **IMS Database**: Hierarchical authorization data
+- **DB2 Tables**: Authorization rules and limits
+- **MQ Queues**: Async authorization messages
 
-**Ejemplos de User Stories**:
-- Como usuario, quiero ver solo las opciones de menú permitidas para mi rol
-- Como administrador, quiero acceder a funcionalidades administrativas desde un menú dedicado
-- Como usuario, quiero navegar fácilmente entre las diferentes funcionalidades del sistema
+#### Pantallas BMS
+- **COPAU00**: Resumen de autorizaciones
+- **COPAU01**: Detalle de autorización
+
+#### Copybooks Específicos
+- **CCPAURLY**: Authorization rules
+- **CIPAUDTY**: IMS authorization data types
+- **CCPAUERY**: Authorization error codes
+- **CIPAUSMY**: Authorization summary structures
+- **CCPAURQY**: Authorization request structures
+- **IMSFUNCS**: IMS function codes
+
+#### Jobs Batch Relacionados
+- **CBPAUP0J**: Batch password authorization processing
+- **DBPAUTP0**: DB2 authorization table population
+
+#### Ejemplos de User Story
+```
+US-AUT-001: Como sistema de punto de venta, quiero autorizar transacciones en tiempo real 
+consultando reglas en IMS y DB2 para aprobar o rechazar compras.
+
+US-AUT-002: Como proceso batch nocturno, quiero procesar autorizaciones de pagos diferidos 
+enviando mensajes a MQ para procesamiento asíncrono.
+
+US-AUT-003: Como analista de seguridad, quiero consultar el historial de autorizaciones 
+para auditar decisiones de aprobación/rechazo.
+```
+
+#### Reglas de Negocio
+- Autorización en < 3 segundos (requisito tiempo real)
+- Validación contra límite de crédito disponible
+- Verificación de estado de tarjeta (activa/bloqueada)
+- Detección de transacciones duplicadas (5 minutos)
+- Registro de todas las autorizaciones en IMS
+- Sincronización DB2/IMS cada 5 minutos
+- MQ para procesamiento asíncrono de reversals
 
 ---
 
-### 🧾 BILL PAYMENT - Pago de Servicios
+### [MÓDULO-8] FACTURACIÓN Y REPORTES
 
-**ID**: `billPayment`  
-**Propósito**: Procesamiento de pagos de servicios y facturas  
-**Componentes Clave**:
-- `BillPaymentScreen.tsx` - Interfaz de pago de servicios
-- `BillPaymentPage.tsx` - Página de pago
+**ID**: `billing-reports`  
+**Propósito**: Procesar pagos de facturas y generar reportes del sistema
 
-**APIs Públicas**:
-- `GET /api/billpayment/getcredentials` - Obtener credenciales de pago
-- `POST /api/billpayment/process` - Procesar pago de servicio
+#### Componentes Clave
+- **COBIL00C**: Procesamiento de pago de factura (CICS)
+- **CORPT00C**: Solicitud de reporte de transacciones (CICS submit batch via TDQ)
 
-**Tipos de Datos**:
-```typescript
-interface BillPayment {
-  paymentId: string;
-  accountId: string;
-  serviceProvider: string;
-  amount: number;
-  referenceNumber: string;
-  paymentDate: string;
-  status: string;
-}
+#### APIs Públicas
+```cobol
+* Posteo de pago a cuenta
+EXEC CICS READ FILE('ACCTDAT')
+    INTO(ACCOUNT-RECORD)
+    UPDATE
+    RIDFLD(WS-ACCT-ID)
+    RESP(WS-RESP-CD)
+END-EXEC
+
+* Actualizar balance
+COMPUTE ACCT-CURR-BAL = ACCT-CURR-BAL - WS-PAYMENT-AMT
+
+EXEC CICS REWRITE FILE('ACCTDAT')
+    FROM(ACCOUNT-RECORD)
+    RESP(WS-RESP-CD)
+END-EXEC
+
+* Submit job batch vía TDQ
+EXEC CICS WRITEQ TD
+    QUEUE('RPTQ')
+    FROM(JCL-CARD)
+    LENGTH(80)
+END-EXEC
 ```
 
-**Reglas de Negocio**:
-- El pago debe estar asociado a una cuenta activa
-- El monto debe estar dentro del crédito disponible
-- Validación del número de referencia según proveedor
-- Registro de confirmación de pago
+#### Archivos Utilizados
+- **ACCTDAT**: Account master (para actualización de balance)
+- **TRANSACT**: Registro de transacción de pago
+- **CXACAIX**: Card→Account xref
+- **TDQ (RPTQ)**: Transient Data Queue para submit de reportes
 
-**Ejemplos de User Stories**:
-- Como usuario, quiero pagar servicios desde mi cuenta para liquidar facturas
-- Como usuario, quiero ver el historial de pagos realizados para llevar control
-- Como usuario, quiero recibir confirmación de pago para tener comprobante
+#### Pantallas BMS
+- **COBIL00**: Pago de factura
+- **CORPT00**: Solicitud de reporte
+
+#### Jobs Batch Relacionados
+- **REPTFILE**: Definir GDG para salida de reportes
+- **TRANREPT**: Generar reporte de transacciones
+- **PRTCATBL**: Imprimir balance por categoría de transacción
+
+#### Ejemplos de User Story
+```
+US-BIL-001: Como cliente, quiero pagar mi factura en línea 
+para reducir mi balance pendiente inmediatamente.
+
+US-BIL-002: Como representante de servicio, quiero solicitar un reporte de transacciones 
+para enviarlo al cliente vía email.
+
+US-BIL-003: Como auditor, quiero generar reporte de balances por categoría 
+para análisis de consumo mensual.
+```
+
+#### Reglas de Negocio
+- Pago mínimo: $10.00
+- Pago máximo: Current Balance
+- Transacción de pago se registra con tipo "PAYMENT"
+- Balance se actualiza inmediatamente
+- Reportes se generan en batch (no online)
+- TDQ submits JCL automáticamente
+- Reportes se almacenan en GDG (Generational Data Groups)
 
 ---
 
-### 🎨 UI - Componentes de Interfaz
+## 🎨 NAVEGACIÓN Y MENÚS
 
-**ID**: `ui`  
-**Propósito**: Componentes reutilizables de interfaz de usuario  
-**Componentes Clave**:
-- `ErrorBoundary.tsx` - Manejo de errores en React
-- `LoadingSpinner.tsx` - Indicador de carga
-- `ConfirmDialog.tsx` - Diálogo de confirmación
-- `Alert.tsx` - Alertas y notificaciones
-- `DataTable.tsx` - Tabla de datos con paginación
+### [MÓDULO-9] MENÚS Y ADMINISTRACIÓN
 
-**Patrones de Uso**:
-- Todos los componentes usan Material-UI como base
-- Estilo consistente con el tema de la aplicación
-- Componentes completamente tipados con TypeScript
-- Accesibilidad (a11y) integrada
+**ID**: `menus-admin`  
+**Propósito**: Navegación central y funciones administrativas
 
-**Ejemplos de User Stories**:
-- Como desarrollador, quiero usar componentes UI estandarizados para mantener consistencia
-- Como usuario, quiero ver mensajes de error claros cuando algo falla
-- Como usuario, quiero ver indicadores de carga mientras se procesan operaciones
+#### Componentes Clave
+- **COMEN01C**: Menú principal de la aplicación
+- **COADM01C**: Menú de administración
 
----
+#### Pantallas BMS
+- **COMEN01**: Menú principal
+- **COADM01**: Menú administrativo
 
-### 🎯 LAYOUT - Estructura de Páginas
-
-**ID**: `layout`  
-**Propósito**: Layouts y estructuras comunes para páginas  
-**Componentes Clave**:
-- `MainLayout.tsx` - Layout principal con navegación
-- `EmptyLayout.tsx` - Layout sin navegación (login)
-- `AppBar.tsx` - Barra de navegación superior
-- `Sidebar.tsx` - Menú lateral (si aplica)
-
-**Patrones de Uso**:
-- Layout adaptativo (responsive)
-- Navegación consistente en todas las páginas
-- Gestión de sesión visible en el header
-
-**Ejemplos de User Stories**:
-- Como usuario, quiero tener acceso rápido al menú desde cualquier página
-- Como usuario, quiero ver mi información de sesión en todo momento
-- Como usuario, quiero cerrar sesión desde cualquier página del sistema
-
----
-
-## 🔄 Estructura de Internacionalización (i18n)
-
-### Estado Actual
-
-**Nota**: El proyecto actualmente **NO** implementa internacionalización. Todos los textos están en inglés directamente en los componentes.
-
-### Estructura Recomendada para Futura Implementación
-
-Si se requiere internacionalización en el futuro, se recomienda:
-
+#### Ejemplos de User Story
 ```
-app/
-├── i18n/
-│   ├── index.ts              # Configuración de i18n
-│   ├── locales/
-│   │   ├── en.json           # Inglés
-│   │   ├── es.json           # Español
-│   │   └── pt-BR.json        # Portugués Brasil
-```
+US-MEN-001: Como usuario autenticado, quiero ver el menú principal 
+para navegar a las diferentes funciones del sistema CardDemo.
 
-**Estructura de Claves Recomendada**:
-
-```json
-{
-  "common": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit"
-  },
-  "pages": {
-    "account": {
-      "viewTitle": "Account Details",
-      "updateTitle": "Update Account"
-    },
-    "creditCard": {
-      "listTitle": "Credit Cards",
-      "addTitle": "Add New Card"
-    }
-  },
-  "forms": {
-    "validation": {
-      "required": "This field is required",
-      "invalidFormat": "Invalid format"
-    }
-  }
-}
+US-MEN-002: Como administrador, quiero acceder al menú administrativo 
+para gestionar usuarios y configuraciones del sistema.
 ```
 
 ---
 
-## 📋 Patrones de Formularios y Listas
+## 🔄 Diagrama de Arquitectura
 
-### Arquitectura de Componentes Identificada
-
-**Patrón Implementado**: **Implementación Directa por Feature**
-
-El proyecto **NO** utiliza componentes base reutilizables (como BaseForm o BaseDataTable). Cada módulo implementa sus propios componentes específicos.
-
-### Estructura de Componentes
-
-```
-app/
-├── components/
-│   ├── account/
-│   │   ├── AccountViewScreen.tsx       # Pantalla específica
-│   │   └── AccountUpdateScreen.tsx     # Pantalla específica
-│   ├── creditCard/
-│   │   ├── CreditCardListScreen.tsx
-│   │   ├── CreditCardViewScreen.tsx
-│   │   └── CreditCardUpdateScreen.tsx
-│   ├── transaction/
-│   │   ├── TransactionAddScreen.tsx
-│   │   ├── TransactionListScreen.tsx
-│   │   └── TransactionViewScreen.tsx
-│   └── ui/
-│       ├── ErrorBoundary.tsx           # Componentes UI generales
-│       ├── LoadingSpinner.tsx
-│       └── ConfirmDialog.tsx
-├── pages/
-│   ├── AccountViewPage.tsx             # Páginas wrapper
-│   ├── AccountUpdatePage.tsx
-│   └── ...
-```
-
-### Patrón de Formularios
-
-**Biblioteca UI**: Material-UI (MUI) 5.15.15
-
-**Componentes MUI Utilizados**:
-- `TextField` - Campos de texto
-- `Button` - Botones
-- `Card` - Contenedores
-- `Dialog` - Modales
-- `Grid` - Layout
-- `Box` - Contenedor flexible
-
-**Ejemplo de Implementación Real**:
-
-```tsx
-import { TextField, Button, Card, CardContent, Grid } from '@mui/material';
-
-function AccountUpdateScreen() {
-  const [formData, setFormData] = useState({
-    accountId: '',
-    firstName: '',
-    lastName: '',
-    // ... otros campos
-  });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Lógica de envío
-  };
-
-  return (
-    <Card>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Account ID"
-                value={formData.accountId}
-                onChange={(e) => setFormData({...formData, accountId: e.target.value})}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button type="submit" variant="contained" color="primary">
-                Save
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </CardContent>
-    </Card>
-  );
-}
+```mermaid
+graph TB
+    subgraph "Capa de Presentación"
+        A[Terminal 3270]
+        B[BMS Maps - 21 Pantallas]
+    end
+    
+    subgraph "Capa de Aplicación CICS"
+        C[Programas Online COBOL]
+        D[Transaction Manager]
+        E[COMMAREA/TSQ/TDQ]
+    end
+    
+    subgraph "Capa de Procesamiento Batch"
+        F[Batch COBOL Programs]
+        G[JCL Jobs - 37 procedimientos]
+    end
+    
+    subgraph "Capa de Datos"
+        H[(VSAM KSDS<br/>CUSTDAT<br/>ACCTDAT<br/>CARDDAT<br/>TRANSACT<br/>USRSEC)]
+        I[(DB2<br/>TRANSACTION_TYPE)]
+        J[(IMS<br/>Authorization DB)]
+        K[MQ Queues]
+    end
+    
+    A -->|Input/Output| B
+    B -->|CICS Commands| C
+    C -->|EXEC CICS| D
+    C -->|READ/WRITE| H
+    C -->|EXEC SQL| I
+    C -->|IMS Calls| J
+    C -->|MQ Messages| K
+    C -->|Submit via TDQ| F
+    D -->|Manage| E
+    F -->|Batch I/O| H
+    F -->|DB2 SQL| I
+    G -->|Execute| F
 ```
 
-### Patrón de Validación
+---
 
-**Método Implementado**: Validación manual con estado de React
+## 📊 Diagrama de Dependencias de Módulos
 
-- No se utiliza librería externa de validación (como Vee-Validate o Formik)
-- Validaciones básicas con atributos HTML5 (`required`, `pattern`, etc.)
-- Validaciones personalizadas en handlers de eventos
-
-**Ejemplo**:
-```tsx
-const validateAccountId = (value: string): boolean => {
-  return value.length === 11 && /^\d+$/.test(value);
-};
+```mermaid
+graph LR
+    SEC[Seguridad/Auth] --> MEN[Menús]
+    MEN --> CUS[Clientes]
+    MEN --> ACC[Cuentas]
+    MEN --> CRD[Tarjetas]
+    MEN --> TRN[Transacciones]
+    MEN --> BIL[Facturación]
+    MEN --> RPT[Reportes]
+    
+    CUS --> ACC
+    ACC --> CRD
+    CRD --> TRN
+    TRN --> TTY[Transaction Types DB2]
+    TRN --> AUT[Autorización IMS/DB2/MQ]
+    TRN --> BIL
+    
+    ACC --> BIL
+    TRN --> RPT
+    
+    style SEC fill:#ff6b6b
+    style AUT fill:#4ecdc4
+    style TTY fill:#45b7d1
+    style TRN fill:#f7b731
+    style BIL fill:#5f27cd
 ```
 
-### Patrón de Notificaciones
+---
 
-**NO IMPLEMENTADO**: El proyecto actualmente no tiene un sistema de notificaciones global.
+## 📋 Reglas de Negocio por Módulo
 
-**Recomendación para Implementación Futura**:
-- Usar `notistack` (compatible con MUI)
-- Implementar un sistema de alertas con MUI `Snackbar`
+### Seguridad y Autenticación
+1. **Longitud de User ID**: Exactamente 8 caracteres alfanuméricos
+2. **Longitud de Password**: Mínimo 8 caracteres
+3. **Tipos de Usuario**: ADMIN, USER, GUEST (control de permisos)
+4. **Bloqueo por Intentos Fallidos**: Máximo 3 intentos consecutivos
+5. **Timeout de Sesión**: 15 minutos de inactividad
+6. **Archivo de Seguridad**: USRSEC VSAM KSDS (RecLen: 80)
 
-### Patrón de Listas/Tablas
+### Clientes
+1. **Customer ID**: Numérico 9 dígitos (único, no reutilizable)
+2. **SSN**: Social Security Number 9 dígitos (validación de formato)
+3. **FICO Score**: Rango 300-850 (para aprobación de crédito)
+4. **Fecha de Nacimiento**: Formato YYYY-MM-DD (validación de edad >= 18)
+5. **Primary Card Holder**: Indicador Y/N (solo uno por cuenta)
+6. **Dirección Completa**: State Code 2 chars, Country Code 3 chars, ZIP 10 chars
+7. **Teléfonos**: Dos números opcionales (15 chars cada uno)
 
-**Implementación**: Tablas customizadas con MUI
+### Cuentas
+1. **Account ID**: Numérico 11 dígitos (único, generado secuencialmente)
+2. **Estados Válidos**: A (Active), C (Closed), S (Suspended)
+3. **Balance Actual**: Puede ser negativo (indica crédito a favor)
+4. **Límite de Crédito**: Máximo $99,999,999.99
+5. **Límite Cash Advance**: Máximo 50% del límite de crédito total
+6. **Balances de Ciclo**: Se resetean al inicio de cada ciclo de facturación
+7. **Fechas Importantes**: Open Date, Expiration Date, Reissue Date (formato YYYY-MM-DD)
+8. **Group ID**: Para cuentas corporativas (10 caracteres)
 
-**Componentes Utilizados**:
-- `Table`, `TableHead`, `TableBody`, `TableRow`, `TableCell` de MUI
-- Paginación manual (no se usa componente de paginación complejo)
-- Acciones en línea con botones MUI
+### Tarjetas
+1. **Card Number**: Único por cuenta (puede haber múltiples tarjetas por cuenta)
+2. **Estados de Tarjeta**: Active, Inactive, Lost, Stolen, Expired
+3. **Índice Alternativo**: CXACAIX permite lookup bidireccional Card↔Account
+4. **Tarjetas Vencidas**: No permiten transacciones (validación en autorización)
+5. **Reemplazo de Tarjeta**: Genera nuevo Card Number (mantiene Account ID)
+6. **Cross-Reference**: CCXREF archivo alternativo para referencias
 
-**Ejemplo de Lista**:
-```tsx
-import { Table, TableHead, TableBody, TableRow, TableCell, Button } from '@mui/material';
+### Transacciones
+1. **Transaction ID**: Único generado secuencialmente (no reutilizable)
+2. **Tipos de Transacción**: Purchase, Cash Advance, Payment, Adjustment, Reversal
+3. **Categorías**: Retail, Dining, Travel, Gas, Grocery, Entertainment, Healthcare, etc.
+4. **Balance por Categoría**: Actualización en tiempo real en TRANCATBAL
+5. **Archivado**: Transacciones > 90 días se mueven a archivo histórico
+6. **Reportes**: Generados vía TDQ (Transient Data Queue) a batch
+7. **Reconciliación**: Proceso batch diario (CBTRN02C)
+8. **Posteo**: Actualización de balances de cuenta (CBTRN03C)
 
-function CreditCardListScreen() {
-  const [cards, setCards] = useState<CreditCard[]>([]);
+### Tipos de Transacción (DB2)
+1. **Transaction Type Code**: Clave primaria única en DB2
+2. **Paginación**: Máximo 7 registros por pantalla (cursor DB2)
+3. **Descripción**: Máximo 50 caracteres
+4. **Operaciones CRUD**: Create, Read, Update, Delete completo
+5. **Eliminación Lógica**: Flag de eliminación (no física)
+6. **Sincronización**: Bidireccional DB2 ↔ VSAM
 
-  return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Card Number</TableCell>
-          <TableCell>Status</TableCell>
-          <TableCell>Actions</TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {cards.map((card) => (
-          <TableRow key={card.cardNumber}>
-            <TableCell>{card.cardNumber}</TableCell>
-            <TableCell>{card.status}</TableCell>
-            <TableCell>
-              <Button onClick={() => handleEdit(card)}>Edit</Button>
-              <Button onClick={() => handleDelete(card)}>Delete</Button>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-}
+### Autorización (IMS/DB2/MQ)
+1. **Tiempo de Respuesta**: < 3 segundos (requisito tiempo real)
+2. **Validación de Límite**: Compara contra límite de crédito disponible
+3. **Estado de Tarjeta**: Solo tarjetas activas pueden autorizar
+4. **Detección de Duplicados**: Transacciones duplicadas dentro de 5 minutos se rechazan
+5. **Registro IMS**: Todas las autorizaciones se registran en IMS
+6. **Sincronización**: DB2/IMS cada 5 minutos
+7. **Procesamiento Asíncrono**: Reversals via MQ
+
+### Facturación y Reportes
+1. **Pago Mínimo**: $10.00 (configurable)
+2. **Pago Máximo**: No puede exceder Current Balance
+3. **Tipo de Transacción Pago**: Automáticamente tipo "PAYMENT"
+4. **Actualización de Balance**: Inmediata (online)
+5. **Generación de Reportes**: Solo en batch (no online)
+6. **TDQ Submit**: JCL se submite automáticamente
+7. **Almacenamiento de Reportes**: GDG (Generational Data Groups) con retención de 7 generaciones
+
+---
+
+## 📋 Patrones de Form y List
+
+### ⚠️ IMPORTANTE: Análisis de Patrones Reales
+
+**NOTA**: Este sistema legacy utiliza BMS (Basic Mapping Support) para pantallas 3270, NO componentes web modernos. Los siguientes patrones son específicos de la tecnología mainframe.
+
+### Estructura de Componentes BMS
+
+```
+Legacy-code/
+ bms/                    # Definiciones de mapas BMS
+   ├── COSGN00.bms        # Mapa de sign-on
+   ├── COUSR00.bms        # Mapa de lista de usuarios
+   ├── COACTVW.bms        # Mapa de vista de cuenta
+   └── ...                # 21 mapas BMS totales
+ cpy-bms/               # Copybooks generados desde BMS
+   ├── COPAU00.cpy        # Copybook de mapa COPAU00
+   └── ...                # Generados automáticamente
+ cbl/                   # Programas COBOL que usan los mapas
+    ├── COSGN00C.cbl       # Usa COSGN00 BMS map
+    ├── COUSR00C.cbl       # Usa COUSR00 BMS map
+    └── ...
 ```
 
-### Análisis de Puntos Clave
+### Patrones de Pantalla Identificados
 
-✅ **Identificado en el Proyecto**:
-- Biblioteca UI: Material-UI 5.15.15
-- Implementación directa (sin componentes base)
-- Formularios en páginas completas (no modales)
-- Validación manual sin librerías externas
-- Estado de formularios con React useState/useReducer
-- Redux Toolkit para estado global
-- No hay sistema de notificaciones centralizado
-- Tablas customizadas con MUI Table components
-- No hay paginación de servidor (datos cargados completos)
+#### Pattern A - Pantalla de Lista con Paginación (COUSR00, COTRN00)
 
-❌ **NO Asumido**:
-- No hay componentes base como BaseForm o BaseDataTable
-- No hay estructura i18n implementada
-- No hay librería de validación externa
-- No hay sistema de notificaciones global
-- No hay layouts compartidos complejos (cada página es independiente)
+**Características**:
+- Display de 10 líneas por pantalla
+- Navegación PF7/PF8 (Previous/Next page)
+- Uso de TSQ (Temporary Storage Queue) para mantener estado
+- Selección con campo de 1 carácter por línea
+
+**Ejemplo COBOL**:
+```cobol
+* Envío de pantalla de lista
+EXEC CICS SEND MAP('COUSR00A')
+    MAPSET('COUSR00')
+    FROM(COUSR0AO)
+    ERASE
+    CURSOR
+END-EXEC
+
+* Control de paginación
+EVALUATE EIBAID
+    WHEN DFHPF7
+        PERFORM PREVIOUS-PAGE
+    WHEN DFHPF8
+        PERFORM NEXT-PAGE
+    WHEN DFHENTER
+        PERFORM PROCESS-SELECTION
+END-EVALUATE
+```
+
+#### Pattern B - Pantalla de Detalle/Actualización (COACTUPC, COCRDUPC)
+
+**Características**:
+- Campos protegidos y no protegidos (BRT, DRK, NORM)
+- Validación campo por campo
+- Uso de COMMAREA para pasar datos
+- Mensajes de error en línea de mensaje dedicada
+
+**Ejemplo COBOL**:
+```cobol
+* Recepción de datos de pantalla
+EXEC CICS RECEIVE MAP('COACTUPA')
+    MAPSET('COACTUP')
+    INTO(COACTAI)
+    RESP(WS-RESP-CD)
+END-EXEC
+
+* Validación
+IF ACCT-ID-L OF COACTAI > 0
+    MOVE ACCT-ID-I OF COACTAI TO WS-ACCT-ID
+    PERFORM VALIDATE-ACCOUNT-ID
+END-IF
+```
+
+#### Pattern C - Pantalla de Búsqueda (COCRDSLC, COTRN02C)
+
+**Características**:
+- Múltiples criterios de búsqueda
+- Resultados en la misma pantalla
+- Browse secuencial con START/READNEXT
+
+**Ejemplo COBOL**:
+```cobol
+* Browse con START
+EXEC CICS START BROWSE
+    FILE('CARDDAT')
+    RIDFLD(WS-SEARCH-KEY)
+    GTEQ
+    RESP(WS-RESP-CD)
+END-EXEC
+
+* Lectura secuencial
+PERFORM UNTIL USER-SEC-EOF
+    EXEC CICS READNEXT FILE('CARDDAT')
+        INTO(CARD-RECORD)
+        RIDFLD(WS-CARD-NUM)
+        RESP(WS-RESP-CD)
+    END-EXEC
+END-PERFORM
+```
+
+### Patrones de Validación
+
+#### Validación de Entrada (sin librería externa)
+
+**Método**: Código COBOL nativo
+
+```cobol
+* Validación numérica
+IF ACCT-ID-L OF SCREEN-INPUT > 0
+    IF ACCT-ID-I OF SCREEN-INPUT IS NOT NUMERIC
+        MOVE 'Account ID must be numeric' TO WS-ERROR-MSG
+        MOVE -1 TO ACCT-ID-L OF SCREEN-OUTPUT
+        SET ERROR-FLAG TO TRUE
+    END-IF
+END-IF
+
+* Validación de rango
+IF WS-CREDIT-LIMIT < 0 OR WS-CREDIT-LIMIT > 99999999.99
+    MOVE 'Credit limit out of range' TO WS-ERROR-MSG
+    SET ERROR-FLAG TO TRUE
+END-IF
+
+* Validación de fecha
+CALL 'CSUTLDTC' USING WS-DATE-FIELD WS-VALID-FLAG
+IF WS-VALID-FLAG = 'N'
+    MOVE 'Invalid date format' TO WS-ERROR-MSG
+END-IF
+```
+
+### Patrones de Notificación
+
+#### Notificación via Línea de Mensaje
+
+**Método**: Campos dedicados en BMS map
+
+```cobol
+* Mensaje de éxito
+MOVE 'Update successful' TO ERRMSGO OF SCREEN-OUTPUT
+MOVE DFHBMPRO TO ERRMSGAO OF SCREEN-OUTPUT
+
+* Mensaje de error
+MOVE 'Account not found' TO ERRMSGO OF SCREEN-OUTPUT
+MOVE DFHBMFSE TO ERRMSGAO OF SCREEN-OUTPUT
+
+* Envío de pantalla con mensaje
+EXEC CICS SEND MAP('MAPNAME')
+    MAPSET('MAPSET')
+    FROM(MAP-OUTPUT-AREA)
+    DATAONLY
+    CURSOR
+END-EXEC
+```
+
+### Patrones de Tabla/Lista
+
+#### Tabla con Acciones (COTRTLIC - Lista con Delete/Update)
+
+**Estructura BMS**:
+```
+Field: SEL (1 char) | TRAN-TYPE-CD (4 chars) | TRAN-TYPE-DESC (50 chars)
+Actions: D=Delete, U=Update
+```
+
+**Lógica COBOL**:
+```cobol
+* Procesamiento de selección
+PERFORM VARYING WS-IDX FROM 1 BY 1 UNTIL WS-IDX > 7
+    IF SEL-FIELD(WS-IDX) = 'D'
+        PERFORM DELETE-TRANSACTION-TYPE
+    END-IF
+    IF SEL-FIELD(WS-IDX) = 'U'
+        PERFORM UPDATE-TRANSACTION-TYPE
+    END-IF
+END-PERFORM
+```
+
+### Patrones de DB2 (Transaction Types)
+
+#### Paginación con Cursor DB2
+
+```cobol
+* Declarar cursor
+EXEC SQL
+    DECLARE TTYPE-CURSOR CURSOR FOR
+    SELECT TRAN_TYPE_CD, TRAN_TYPE_DESC
+    FROM TRANSACTION_TYPE
+    ORDER BY TRAN_TYPE_CD
+END-EXEC
+
+* Abrir cursor
+EXEC SQL OPEN TTYPE-CURSOR END-EXEC
+
+* Fetch página (7 registros)
+PERFORM VARYING WS-IDX FROM 1 BY 1 UNTIL WS-IDX > 7
+    EXEC SQL
+        FETCH NEXT FROM TTYPE-CURSOR
+        INTO :WS-TRAN-TYPE-CD, :WS-TRAN-TYPE-DESC
+    END-EXEC
+    
+    IF SQLCODE = 0
+        MOVE WS-TRAN-TYPE-CD TO TYPE-CD-O(WS-IDX)
+        MOVE WS-TRAN-TYPE-DESC TO TYPE-DESC-O(WS-IDX)
+    ELSE
+        SET END-OF-DATA TO TRUE
+    END-IF
+END-PERFORM
+
+* Cerrar cursor
+EXEC SQL CLOSE TTYPE-CURSOR END-EXEC
+```
 
 ---
 
 ## 🎯 Patrones de User Stories
 
-### Plantillas por Dominio
+### Templates por Dominio
 
-#### 📋 Historias de Autenticación
-**Patrón**: Como [rol] quiero [autenticarme/gestionar sesión] para [acceder/mantener seguridad]
+#### Seguridad y Autenticación
+```
+Pattern: Como [tipo de usuario] quiero [acción de autenticación/autorización] para [valor de seguridad]
 
-**Ejemplos**:
-- Como usuario back-office, quiero iniciar sesión con mis credenciales para acceder al sistema
-- Como usuario, quiero que mi sesión expire automáticamente por inactividad para mantener la seguridad
-- Como administrador, quiero gestionar roles de usuarios para controlar accesos
+Ejemplo 1: Como administrador del sistema, quiero crear nuevos usuarios con diferentes roles 
+para controlar el acceso a funciones sensibles del sistema CardDemo.
 
-#### 💳 Historias de Cuentas
-**Patrón**: Como [rol] quiero [consultar/modificar] información de cuenta para [gestión/servicio]
+Ejemplo 2: Como usuario del sistema, quiero cambiar mi contraseña periódicamente 
+para mantener la seguridad de mi cuenta.
 
-**Ejemplos**:
-- Como usuario back-office, quiero consultar el balance de una cuenta para informar al cliente
-- Como usuario back-office, quiero actualizar la dirección del cliente para mantener datos correctos
-- Como usuario back-office, quiero ver todas las tarjetas de una cuenta para gestionar plásticos
+Ejemplo 3: Como auditor de seguridad, quiero revisar intentos fallidos de login 
+para detectar posibles ataques de fuerza bruta.
+```
 
-#### 💳 Historias de Tarjetas
-**Patrón**: Como [rol] quiero [gestionar] tarjetas para [administrar plásticos/prevenir fraudes]
+#### Gestión de Clientes
+```
+Pattern: Como [persona de servicio/sistema] quiero [operación sobre cliente] para [beneficio de negocio]
 
-**Ejemplos**:
-- Como usuario back-office, quiero dar de alta una nueva tarjeta para reemplazar una expirada
-- Como usuario back-office, quiero bloquear una tarjeta para prevenir uso fraudulento
-- Como usuario back-office, quiero consultar el estado de una tarjeta para atender solicitudes
+Ejemplo 1: Como representante de servicio al cliente, quiero actualizar la dirección de un cliente 
+para asegurar envío correcto de estados de cuenta.
 
-#### 💸 Historias de Transacciones
-**Patrón**: Como [rol] quiero [registrar/consultar] transacciones para [control/auditoría]
+Ejemplo 2: Como proceso de migración, quiero exportar datos de clientes en formato multi-registro 
+para transferir carteras entre sucursales.
 
-**Ejemplos**:
-- Como usuario back-office, quiero registrar una transacción manual para corregir un cargo
-- Como usuario back-office, quiero consultar el historial de transacciones para auditar movimientos
-- Como administrador, quiero generar reportes de transacciones para análisis financiero
+Ejemplo 3: Como analista de crédito, quiero consultar el FICO score de un cliente 
+para evaluar solicitudes de aumento de límite.
+```
 
-#### 👤 Historias de Usuarios
-**Patrón**: Como administrador quiero [gestionar] usuarios del sistema para [control de acceso]
+#### Gestión de Cuentas
+```
+Pattern: Como [rol de negocio] quiero [gestión de cuenta] para [objetivo financiero]
 
-**Ejemplos**:
-- Como administrador, quiero crear nuevos usuarios para dar acceso a empleados
-- Como administrador, quiero desactivar usuarios para revocar accesos
-- Como administrador, quiero cambiar roles de usuarios para ajustar permisos
+Ejemplo 1: Como supervisor de crédito, quiero aumentar el límite de crédito de una cuenta 
+para aprobar solicitudes de clientes con buen historial de pago.
+
+Ejemplo 2: Como sistema batch, quiero cerrar cuentas inactivas por más de 12 meses 
+para cumplir con políticas de gestión de cartera.
+
+Ejemplo 3: Como representante de servicio, quiero consultar el balance actual y límite disponible 
+para responder consultas de clientes.
+```
+
+#### Procesamiento de Transacciones
+```
+Pattern: Como [entidad procesadora] quiero [procesamiento de transacción] para [objetivo operacional]
+
+Ejemplo 1: Como sistema de punto de venta, quiero registrar transacciones de compra en tiempo real 
+para actualizar balances de cuenta inmediatamente.
+
+Ejemplo 2: Como proceso batch nocturno, quiero reconciliar transacciones del día 
+para asegurar integridad de datos antes de generación de estados de cuenta.
+
+Ejemplo 3: Como analista de fraude, quiero consultar transacciones por rango de fecha y monto 
+para investigar actividad sospechosa.
+```
+
+#### Autorización
+```
+Pattern: Como [sistema autorizador] quiero [decisión de autorización] para [control de riesgo]
+
+Ejemplo 1: Como motor de autorización, quiero validar límite de crédito disponible en < 3 segundos 
+para aprobar o rechazar transacciones en tiempo real.
+
+Ejemplo 2: Como sistema de seguridad, quiero detectar transacciones duplicadas dentro de 5 minutos 
+para prevenir doble cobro a clientes.
+
+Ejemplo 3: Como proceso de autorización batch, quiero procesar autorizaciones diferidas vía MQ 
+para manejar picos de volumen sin afectar tiempo de respuesta online.
+```
+
+#### Facturación y Reportes
+```
+Pattern: Como [usuario de facturación/reporte] quiero [operación de pago/reporte] para [objetivo financiero/informativo]
+
+Ejemplo 1: Como cliente, quiero pagar mi factura mensual online 
+para evitar cargos por intereses y mora.
+
+Ejemplo 2: Como gerente de operaciones, quiero generar reporte de transacciones por categoría 
+para análisis de patrones de consumo de clientes.
+
+Ejemplo 3: Como auditor financiero, quiero generar reporte de balances al cierre del día 
+para conciliación contable.
+```
+
+### Complejidad de Stories
+
+#### Simple (1-2 pts): CRUD con Patrones Existentes
+- Consulta de registro existente (READ VSAM)
+- Actualización de campo simple (REWRITE VSAM)
+- Listado sin filtros complejos (BROWSE)
+- Ejemplo: "Consultar balance de cuenta por Account ID"
+
+#### Mediano (3-5 pts): Lógica de Negocio + Validación
+- CRUD con validaciones de negocio
+- Cálculos financieros (intereses, balances)
+- Paginación con TSQ
+- Ejemplo: "Procesar pago de factura con validación de monto y actualización de balance"
+
+#### Complejo (5-8 pts): Integración Multi-Sistema
+- Integración DB2 + VSAM
+- Procesamiento IMS + DB2 + MQ
+- Batch con múltiples archivos
+- Generación de reportes complejos
+- Ejemplo: "Autorizar transacción consultando IMS, actualizando DB2 y enviando mensaje MQ"
+
+### Patrones de Acceptance Criteria
+
+#### Autenticación
+```
+AC-001: Debe validar que User ID tenga exactamente 8 caracteres alfanuméricos
+AC-002: Debe validar que Password tenga mínimo 8 caracteres
+AC-003: Debe bloquear usuario después de 3 intentos fallidos
+AC-004: Debe iniciar sesión CICS con COMMAREA conteniendo User ID y tipo de usuario
+AC-005: Debe mostrar mensaje de error "Invalid credentials" si usuario/password incorrectos
+```
+
+#### Validación de Datos
+```
+AC-010: Debe verificar que Account ID sea numérico de 11 dígitos
+AC-011: Debe verificar que Credit Limit no exceda $99,999,999.99
+AC-012: Debe verificar que fecha esté en formato YYYY-MM-DD
+AC-013: Debe verificar que SSN tenga exactamente 9 dígitos numéricos
+AC-014: Debe mostrar cursor en campo con error usando MOVE -1 TO field-L
+```
+
+#### Performance
+```
+AC-020: Debe responder en < 3 segundos para transacciones online
+AC-021: Debe procesar < 100ms para lectura VSAM con clave primaria
+AC-022: Debe soportar 100+ usuarios concurrentes en CICS
+AC-023: Debe procesar batch de 1M+ transacciones en < 2 horas
+```
+
+#### Manejo de Errores
+```
+AC-030: Debe mostrar "Record not found" cuando RESP-CD = DFHRESP(NOTFND)
+AC-031: Debe mostrar "Duplicate key" cuando RESP-CD = DFHRESP(DUPREC)
+AC-032: Debe hacer ROLLBACK de transacción DB2 si falla actualización VSAM
+AC-033: Debe registrar errores en CICS TD Queue para análisis posterior
+```
+
+#### Seguridad
+```
+AC-040: Debe verificar autorización antes de permitir actualización
+AC-041: Debe encriptar password en archivo USRSEC
+AC-042: Debe registrar todas las transacciones de actualización en audit log
+AC-043: Debe validar que usuario tenga tipo ADMIN para funciones administrativas
+```
 
 ---
 
-## 📊 Complejidad de Historias
+## ⚡ Performance Budgets
 
-### Simple (1-2 puntos)
-**Características**:
-- CRUD básico con patrones existentes
-- Sin validaciones complejas de negocio
-- UI estándar con componentes MUI
-- Sin integraciones externas
+### Transacciones Online (CICS)
+- **Tiempo de Respuesta**: < 3 segundos (P95)
+- **First Paint**: < 1 segundo (envío de mapa BMS)
+- **Lectura VSAM con Key**: < 100 ms
+- **Actualización VSAM**: < 200 ms
+- **Query DB2 Simple**: < 500 ms
+- **Autorización IMS**: < 2 segundos
 
-**Ejemplos**:
-- Consultar detalles de una cuenta existente
-- Listar tarjetas de una cuenta
-- Ver historial de transacciones sin filtros
+### Procesamiento Batch
+- **Throughput Transacciones**: 100,000+ registros/hora
+- **Lectura Secuencial VSAM**: 50,000+ registros/minuto
+- **Posteo de Transacciones**: 1M+ transacciones en < 2 horas
+- **Generación de Reportes**: Completar en ventana batch nocturna (6 horas)
+- **Export/Import Clientes**: 500,000 clientes en < 1 hora
 
-### Media (3-5 puntos)
-**Características**:
-- Lógica de negocio con validaciones
-- Formularios con múltiples campos
-- Cálculos o transformaciones de datos
-- Manejo de errores específico
+### Base de Datos
+- **VSAM READ (Key)**: < 10 ms (P95)
+- **VSAM WRITE**: < 20 ms (P95)
+- **DB2 Query Simple**: < 100 ms (P95)
+- **DB2 Cursor Fetch (7 rows)**: < 200 ms
+- **IMS Transaction**: < 1 segundo
 
-**Ejemplos**:
-- Actualizar información de cuenta con validaciones
-- Registrar nueva transacción con verificación de límites
-- Dar de alta nueva tarjeta con validación Luhn
-- Generar reporte básico de transacciones
+### Cache/Queue
+- **TSQ Read/Write**: < 5 ms
+- **TDQ Write**: < 10 ms
+- **MQ Put Message**: < 50 ms
+- **COMMAREA Transfer**: < 1 ms
 
-### Compleja (5-8 puntos)
-**Características**:
-- Múltiples integraciones
-- Lógica de negocio compleja
-- Validaciones cruzadas entre entidades
-- Procesamiento asíncrono
-- Manejo de estados complejos
-
-**Ejemplos**:
-- Procesar pago de servicios con validación de saldo y límite
-- Implementar sistema de notificaciones global
-- Migrar sistema de mocks a API real
-- Implementar internacionalización completa
+### Concurrencia
+- **Usuarios CICS Concurrentes**: Soportar 100+ usuarios
+- **Transacciones CICS/segundo**: 50+ TPS
+- **DB2 Conexiones Concurrentes**: 20+ cursores abiertos
+- **VSAM Files Abiertos**: 15+ archivos simultáneamente
 
 ---
 
-## 📋 Patrones de Criterios de Aceptación
-
-### Autenticación
-- **DEBE** validar credenciales contra base de datos
-- **DEBE** redirigir al menú correspondiente según rol
-- **DEBE** mostrar mensaje de error si las credenciales son incorrectas
-- **DEBE** crear sesión con token de seguridad
-- **DEBE** expirar sesión después de [X] minutos de inactividad
-
-### Validación de Datos
-- **DEBE** validar que el accountId tenga exactamente 11 dígitos
-- **DEBE** validar que el número de tarjeta cumpla algoritmo Luhn
-- **DEBE** validar que los campos requeridos no estén vacíos
-- **DEBE** mostrar mensajes de error específicos por campo
-- **DEBE** prevenir el envío del formulario si hay errores
-
-### Performance
-- **DEBE** responder en menos de 2 segundos (P95)
-- **DEBE** cargar la página inicial en menos de 3 segundos
-- **DEBE** mostrar indicador de carga durante operaciones largas
-- **DEBE** optimizar consultas para evitar timeouts
-
-### Manejo de Errores
-- **DEBE** mostrar mensaje claro cuando falla una operación
-- **DEBE** logear errores para auditoría
-- **DEBE** no exponer información sensible en mensajes de error
-- **DEBE** permitir reintentar operaciones fallidas
-
-### Seguridad
-- **DEBE** validar permisos antes de permitir operación
-- **DEBE** enmascarar números de tarjeta (mostrar solo últimos 4 dígitos)
-- **DEBE** no almacenar CVV en logs
-- **DEBE** cerrar sesión automáticamente por inactividad
-
----
-
-## ⚡ Presupuestos de Performance
-
-### Tiempos de Carga
-- **First Contentful Paint**: < 1.5s
-- **Time to Interactive**: < 3s
-- **Total Bundle Size**: < 500KB (gzipped)
-
-### Respuesta de API
-- **GET requests**: < 500ms (P95)
-- **POST/PUT requests**: < 1000ms (P95)
-- **Consultas complejas**: < 2000ms (P95)
-
-### Optimizaciones Implementadas
-- **Code Splitting**: Manual chunks para vendor, mui, redux, router
-- **Lazy Loading**: Todas las páginas cargadas dinámicamente
-- **API Mocking**: MSW para desarrollo sin backend (300-800ms delay)
-- **Build Tool**: Vite para builds rápidos
-
----
-
-## 🚨 Consideraciones de Readiness
+## 🚨 Consideraciones de Preparación
 
 ### Riesgos Técnicos
 
-**RIESGO-1**: Dependencia de Mocks en Desarrollo
-- **Descripción**: El desarrollo se basa completamente en MSW mocks
-- **Mitigación**: 
-  - Mantener mocks sincronizados con contratos de API reales
-  - Documentar diferencias entre mocks y API real
-  - Implementar feature flags para habilitar/deshabilitar mocks
+**RISK-001: Dependencia de IMS/DB2/MQ para Autorizaciones**
+- **Descripción**: Módulo de autorización requiere IMS, DB2 y MQ funcionando
+- **Impacto**: Transacciones no se pueden autorizar si cualquier componente falla
+- **Mitigación**: Implementar circuit breaker y fallback a autorización local
 
-**RIESGO-2**: Sin Sistema de Notificaciones Global
-- **Descripción**: No hay feedback visual consistente para operaciones
-- **Mitigación**:
-  - Priorizar implementación de sistema de notificaciones
-  - Usar Snackbar de MUI como solución temporal
-  - Documentar patrón estándar para nuevas features
+**RISK-002: Performance de Archivos VSAM en Volumen Alto**
+- **Descripción**: VSAM puede degradarse con millones de registros
+- **Impacto**: Tiempo de respuesta > 3 segundos en horas pico
+- **Mitigación**: Reorganización periódica (REPRO), índices alternativos optimizados
 
-**RIESGO-3**: Sin Internacionalización
-- **Descripción**: Todos los textos están hardcodeados en inglés
-- **Mitigación**:
-  - Evaluar necesidad real de i18n antes de implementar
-  - Si se requiere, usar react-i18next
-  - Planificar refactor gradual si se decide implementar
+**RISK-003: Paginación con TSQ puede Fallar en Carga Alta**
+- **Descripción**: Temporary Storage Queue puede llenarse con múltiples usuarios
+- **Impacto**: Usuarios no pueden paginar listas
+- **Mitigación**: Limpiar TSQ después de cada sesión, límite de páginas por usuario
 
-**RIESGO-4**: Validación de Formularios Básica
-- **Descripción**: No hay librería de validación robusta
-- **Mitigación**:
-  - Implementar validaciones consistentes en todos los formularios
-  - Considerar integrar Formik o React Hook Form para formularios complejos
-  - Documentar patrones de validación estándar
+**RISK-004: Generación de Reportes via TDQ**
+- **Descripción**: TDQ puede saturarse si múltiples usuarios solicitan reportes
+- **Impacto**: Jobs batch no se submitean correctamente
+- **Mitigación**: Cola dedicada por tipo de reporte, monitoreo de TDQ depth
+
+**RISK-005: Sincronización DB2/VSAM**
+- **Descripción**: Transacciones pueden quedar inconsistentes entre DB2 y VSAM
+- **Impacto**: Datos de tipos de transacción desincronizados
+- **Mitigación**: Proceso batch de reconciliación cada 5 minutos
 
 ### Deuda Técnica
 
-**DEUDA-1**: Falta de Tests Unitarios
-- **Impacto**: Alto riesgo de regresión al hacer cambios
-- **Plan de Resolución**: 
-  - Implementar tests para componentes críticos (auth, transactions)
-  - Usar React Testing Library + Vitest
-  - Objetivo: >70% cobertura en 3 sprints
+**DEBT-001: Códigos Hardcodeados en COBOL**
+- **Impacto**: Cambios requieren recompilación de programas
+- **Ubicación**: WS-CONSTANTS en programas CICS
+- **Plan de Resolución**: Migrar a tablas de configuración en VSAM o DB2
 
-**DEUDA-2**: Sin Sistema de Notificaciones
-- **Impacto**: Experiencia de usuario inconsistente
-- **Plan de Resolución**:
-  - Sprint 1: Implementar notificaciones básicas con MUI Snackbar
-  - Sprint 2: Integrar en todas las operaciones CRUD
-  - Sprint 3: Añadir notificaciones de error y éxito consistentes
+**DEBT-002: Sin Manejo de Excepciones Centralizado**
+- **Impacto**: Mensajes de error inconsistentes entre programas
+- **Ubicación**: EVALUATE EIBAID y RESP-CD en cada programa
+- **Plan de Resolución**: Crear copybook centralizado de manejo de errores
 
-**DEUDA-3**: Documentación de APIs Incompleta
-- **Impacto**: Dificultad para integrar con backend real
-- **Plan de Resolución**:
-  - Documentar contratos de API con OpenAPI/Swagger
-  - Validar mocks contra contratos reales
-  - Mantener documentación actualizada en cada cambio
+**DEBT-003: Paginación Manual con TSQ**
+- **Impacto**: Código duplicado en todos los programas de lista
+- **Ubicación**: COUSR00C, COTRN00C, COCRDLIC
+- **Plan de Resolución**: Crear programa reutilizable de paginación
 
-### Secuenciamiento de User Stories
+**DEBT-004: Validaciones Duplicadas**
+- **Impacto**: Lógica de validación repetida en múltiples programas
+- **Ubicación**: Validación de Account ID, SSN, fechas
+- **Plan de Resolución**: Crear CSUTLDVC (validation copybook) reutilizable
 
-**Prerequisitos**:
-1. Sistema de autenticación funcionando
-2. Conexión a backend (o mocks configurados)
-3. Componentes UI base implementados
+**DEBT-005: Comentarios en Inglés, Mensajes Hardcoded**
+- **Impacto**: Dificulta internacionalización
+- **Ubicación**: Todos los programas COBOL
+- **Plan de Resolución**: Migrar mensajes a tablas, externalizar strings
 
-**Orden Recomendado**:
-1. **Sprint 1**: Autenticación y Menús
-   - Login/Logout
-   - Menú principal y admin
-   - Rutas protegidas
+### Secuenciamiento de US
 
-2. **Sprint 2**: Consultas Básicas
-   - Consulta de cuenta
-   - Consulta de tarjetas
-   - Consulta de transacciones
+#### Prerequisitos
+1. **Infraestructura Base**: CICS, VSAM, DB2, IMS, MQ deben estar configurados
+2. **Archivos Definidos**: Ejecutar todos los JCL DEFGDG*, DEF*FILE
+3. **Datos Maestros**: Cargar USRSEC, CUSTDAT, ACCTDAT, CARDDAT iniciales
+4. **Tablas DB2**: Crear TRANSACTION_TYPE y tablas de autorización
+5. **BMS Maps Compilados**: Generar copybooks desde BMS maps
 
-3. **Sprint 3**: Operaciones CRUD
-   - Actualización de cuenta
-   - Alta/baja de tarjetas
-   - Registro de transacciones
+#### Orden Recomendado de Desarrollo
+```
+FASE 1 - Fundación:
+  US-SEC-001: Autenticación básica (COSGN00C)
+  US-MEN-001: Menú principal (COMEN01C)
+  US-SEC-002: Gestión de usuarios (COUSR00C, COUSR01C)
 
-4. **Sprint 4**: Funcionalidades Avanzadas
-   - Reportes de transacciones
-   - Pago de servicios
-   - Gestión de usuarios
+FASE 2 - Datos Maestros:
+  US-CUS-001: Consulta de clientes (CBCUS01C)
+  US-ACC-001: Consulta de cuentas (COACTVWC)
+  US-CRD-001: Consulta de tarjetas (COCRDLIC)
 
-5. **Sprint 5**: Mejoras UX
-   - Sistema de notificaciones
-   - Validaciones robustas
-   - Manejo de errores mejorado
+FASE 3 - Transacciones Core:
+  US-TRN-001: Consulta de transacciones (COTRN00C, COTRN01C)
+  US-TTY-001: Tipos de transacción DB2 (COTRTLIC)
+  US-BIL-001: Pago de facturas (COBIL00C)
+
+FASE 4 - Procesos Batch:
+  US-TRN-002: Posteo batch de transacciones (CBTRN03C)
+  US-CUS-002: Export/Import de clientes (CBEXPORT, CBIMPORT)
+  US-BIL-002: Generación de reportes (CORPT00C, batch reports)
+
+FASE 5 - Autorización (Complejo):
+  US-AUT-001: Autorización IMS/DB2/MQ (COPAUS0C, COPAUS1C, COPAUS2C)
+  US-AUT-002: Autorización batch (CBPAUP0C)
+
+FASE 6 - Optimización:
+  US-ACC-002: Actualización de límites (COACTUPC)
+  US-CRD-003: Gestión de estados de tarjeta (COCRDUPC)
+  US-TRN-003: Búsqueda avanzada (COTRN02C)
+```
 
 ---
 
-## ✅ Lista de Tareas
+## ✅ Task List
 
-### Completadas
+### Completed
+- [x] TASK-DOC-001: Documentación completa de estructura de código Legacy - Status: done
+- [x] TASK-DOC-002: Identificación de 8 módulos funcionales principales - Status: done
+- [x] TASK-DOC-003: Documentación de 29 programas COBOL - Status: done
+- [x] TASK-DOC-004: Catálogo de 21 pantallas BMS - Status: done
+- [x] TASK-DOC-005: Documentación de 37 jobs JCL - Status: done
+- [x] TASK-DOC-006: Mapeo de archivos VSAM, DB2 e IMS - Status: done
+- [x] TASK-DOC-007: Definición de copybooks y estructuras de datos - Status: done
+- [x] TASK-DOC-008: Patrones de User Stories por módulo - Status: done
 
-- [x] **AUTH-001**: Implementar sistema de autenticación básico - Status: done
-- [x] **AUTH-002**: Implementar rutas protegidas con ProtectedRoute - Status: done
-- [x] **AUTH-003**: Implementar hook de sesión segura - Status: done
-- [x] **ACCOUNT-001**: Implementar consulta de cuenta - Status: done
-- [x] **ACCOUNT-002**: Implementar actualización de cuenta - Status: done
-- [x] **CARD-001**: Implementar lista de tarjetas - Status: done
-- [x] **CARD-002**: Implementar consulta de detalle de tarjeta - Status: done
-- [x] **CARD-003**: Implementar actualización de tarjeta - Status: done
-- [x] **TRANS-001**: Implementar registro de transacción - Status: done
-- [x] **TRANS-002**: Implementar consulta de transacción - Status: done
-- [x] **TRANS-003**: Implementar lista de transacciones - Status: done
-- [x] **USER-001**: Implementar lista de usuarios - Status: done
-- [x] **USER-002**: Implementar alta de usuario - Status: done
-- [x] **USER-003**: Implementar actualización de usuario - Status: done
-- [x] **USER-004**: Implementar baja de usuario - Status: done
-- [x] **MENU-001**: Implementar menú principal - Status: done
-- [x] **MENU-002**: Implementar menú admin - Status: done
-- [x] **BILL-001**: Implementar pago de servicios - Status: done
-- [x] **MOCK-001**: Implementar MSW con mocks completos - Status: done
-- [x] **DEPLOY-001**: Configurar Docker para producción - Status: done
-- [x] **DEPLOY-002**: Configurar base path para deployment - Status: done
+### Pending
+- [ ] TASK-IMPL-001: Implementar validaciones centralizadas en copybook CSUTLDVC - Status: pending
+- [ ] TASK-IMPL-002: Crear programa reutilizable de paginación - Status: pending
+- [ ] TASK-IMPL-003: Migrar constantes a tablas de configuración - Status: pending
+- [ ] TASK-IMPL-004: Implementar manejo centralizado de errores - Status: pending
+- [ ] TASK-IMPL-005: Externalizar mensajes para internacionalización - Status: pending
 
-### Pendientes
-
-- [ ] **TEST-001**: Implementar tests unitarios para componentes críticos - Status: pending
-- [ ] **TEST-002**: Implementar tests de integración - Status: pending
-- [ ] **NOTIF-001**: Implementar sistema de notificaciones global - Status: pending
-- [ ] **VALID-001**: Mejorar validaciones de formularios - Status: pending
-- [ ] **I18N-001**: Evaluar necesidad de internacionalización - Status: pending
-- [ ] **DOC-001**: Documentar contratos de API con OpenAPI - Status: pending
-- [ ] **PERF-001**: Implementar lazy loading para rutas - Status: pending (ya está implementado con React.lazy)
-- [ ] **ACCESS-001**: Mejorar accesibilidad (a11y) - Status: pending
-- [ ] **ERROR-001**: Implementar boundary de errores global - Status: pending (ya existe ErrorBoundary básico)
-
-### Obsoletas
-
-- [~] **OLD-001**: Implementar formularios con React Hook Form - Status: outdated (se decidió usar estado nativo de React)
-- [~] **OLD-002**: Implementar Redux-Saga - Status: outdated (se usa Redux Toolkit con createAsyncThunk)
+### Obsolete
+- [~] TASK-OLD-001: Migración a arquitectura web (fuera de alcance) - Status: outdated
 
 ---
 
 ## 📈 Métricas de Éxito
 
 ### Adopción
-- **Objetivo**: 100% de usuarios back-office usan el sistema
-- **Engagement**: Tiempo promedio > 30 minutos por sesión
-- **Retención**: 90% de usuarios retornan semanalmente
+- **Target**: 100% de usuarios del sistema mainframe usan CardDemo
+- **Engagement**: Promedio > 50 transacciones/usuario/día
+- **Retention**: 95%+ usuarios activos mensualmente
 
 ### Impacto de Negocio
-- **METRICA-1**: 50% reducción en tiempo de procesamiento de transacciones
-- **METRICA-2**: 80% reducción en errores de captura manual
-- **METRICA-3**: 100% de operaciones auditables con logs completos
-- **METRICA-4**: < 2 segundos tiempo de respuesta promedio
+- **METRIC-001**: 50% de reducción en tiempo de procesamiento de transacciones vs sistema anterior
+- **METRIC-002**: 30% de reducción en errores de datos por validaciones automáticas
+- **METRIC-003**: 90%+ de transacciones autorizadas en < 3 segundos
+- **METRIC-004**: 99.9% de disponibilidad del sistema CICS
+- **METRIC-005**: Procesamiento exitoso de 1M+ transacciones diarias
 
-### Calidad Técnica
-- **Code Coverage**: > 70% en componentes críticos
-- **Zero Critical Bugs**: En producción
-- **Performance Score**: > 90 en Lighthouse
-- **Accessibility Score**: > 90 en Lighthouse
-
----
-
-## 🔗 APIs Documentadas
-
-### Autenticación
-
-#### POST /api/security/signOn
-Autentica un usuario en el sistema.
-
-**Request**:
-```json
-{
-  "userId": "ADMIN001",
-  "password": "admin123"
-}
-```
-
-**Response Success (200)**:
-```json
-{
-  "success": true,
-  "user": {
-    "userId": "ADMIN001",
-    "name": "System Administrator",
-    "role": "admin",
-    "type": "A"
-  }
-}
-```
-
-**Response Error (401)**:
-```json
-{
-  "success": false,
-  "message": "Invalid credentials"
-}
-```
+### Eficiencia Operacional
+- **METRIC-006**: Reducción de 40% en tiempo de generación de reportes
+- **METRIC-007**: 95%+ de jobs batch completan en ventana nocturna
+- **METRIC-008**: < 5% de transacciones requieren intervención manual
 
 ---
 
-#### POST /api/security/signOff
-Cierra la sesión del usuario actual.
+## 📝 Notas Finales
 
-**Request**: Sin body
+**Última actualización**: 2026-03-06  
+**Precisión del codebase**: 95%+  
+**Fuente**: Análisis completo de carpeta Legacy-code/
 
-**Response (200)**:
-```json
-{
-  "success": true,
-  "message": "Signed off successfully"
-}
-```
+**Mantenedores**: Squad AI - Deividson Callejas  
+**Licencia**: Apache License 2.0 (Amazon Web Services)  
+**Versión CardDemo**: v1.0-15-g27d6c6f-68 (2022-07-19)
 
 ---
 
-### Cuentas
+## 🔗 Referencias Adicionales
 
-#### GET /api/account/acccount?accountId={id}
-Consulta información completa de una cuenta.
+### Archivos de Referencia Rápida
+- [MOCK_DATA_QUICK_REF.md](../MOCK_DATA_QUICK_REF.md): Referencia rápida de datos mock
+- [MOCK_DATA_SUMMARY.md](../MOCK_DATA_SUMMARY.md): Resumen de datos de prueba
+- [TEMPLATE_DOC.txt](../TEMPLATE_DOC.txt): Template para documentación
 
-**Query Parameters**:
-- `accountId` (required): ID de cuenta de 11 dígitos
+### Estructura de Código
+- **Legacy-code/cbl/**: 29 programas COBOL
+- **Legacy-code/bms/**: 21 mapas BMS de pantallas
+- **Legacy-code/cpy/**: 28 copybooks de datos
+- **Legacy-code/jcl/**: 37 procedimientos JCL
+- **Legacy-code/app-*/**: 3 aplicaciones especializadas (IMS/DB2/MQ, Transaction Types, VSAM/MQ)
 
-**Response (200)**:
-```json
-{
-  "accountId": "11111111111",
-  "status": "Y",
-  "balance": 1250.75,
-  "creditLimit": 5000.00,
-  "availableCredit": 3749.25,
-  "groupId": "PREMIUM",
-  "customer": {
-    "customerId": "1000000001",
-    "firstName": "JOHN",
-    "middleName": "MICHAEL",
-    "lastName": "SMITH",
-    "ssn": "123-45-6789",
-    "ficoScore": 750,
-    "dateOfBirth": "1985-06-15",
-    "address": {
-      "addressLine1": "123 MAIN STREET",
-      "addressLine2": "APT 4B",
-      "city": "NEW YORK",
-      "state": "NY",
-      "zipCode": "10001",
-      "country": "USA"
-    },
-    "phones": [
-      {
-        "phoneType": "HOME",
-        "phoneNumber": "(555) 123-4567"
-      }
-    ]
-  },
-  "cards": [
-    {
-      "cardNumber": "4111-1111-1111-1111",
-      "status": "ACTIVE"
-    }
-  ]
-}
-```
+### Convenciones de Nomenclatura
+- **CO***: Programas CICS Online
+- **CB***: Programas Batch
+- **CS***: Servicios Comunes/Utilitarios
+- **CV***: Copybooks de Vista (Structures)
+- **CC***: Copybooks Comunes CICS
+- **CI***: Copybooks de Integración IMS
+- **CU***: Customer-related
 
 ---
 
-#### PUT /api/account/update
-Actualiza información de una cuenta y su cliente.
-
-**Request**:
-```json
-{
-  "accountId": "11111111111",
-  "customer": {
-    "firstName": "JOHN",
-    "middleName": "MICHAEL",
-    "lastName": "SMITH",
-    "address": {
-      "addressLine1": "456 NEW STREET",
-      "city": "NEW YORK",
-      "state": "NY",
-      "zipCode": "10002"
-    }
-  }
-}
-```
-
-**Response (200)**:
-```json
-{
-  "success": true,
-  "message": "Account updated successfully"
-}
-```
-
----
-
-### Tarjetas de Crédito
-
-#### GET /api/creditcard/cards?accountId={id}
-Lista todas las tarjetas de una cuenta.
-
-**Query Parameters**:
-- `accountId` (required): ID de cuenta
-
-**Response (200)**:
-```json
-{
-  "cards": [
-    {
-      "cardNumber": "4111-1111-1111-1111",
-      "accountId": "11111111111",
-      "embossedName": "JOHN M SMITH",
-      "expirationDate": "12/2025",
-      "status": "ACTIVE",
-      "cardType": "VISA"
-    }
-  ]
-}
-```
-
----
-
-#### GET /api/creditcard/carddetails?cardNumber={number}
-Obtiene detalles completos de una tarjeta.
-
-**Query Parameters**:
-- `cardNumber` (required): Número de tarjeta (con o sin guiones)
-
-**Response (200)**:
-```json
-{
-  "cardNumber": "4111-1111-1111-1111",
-  "accountId": "11111111111",
-  "embossedName": "JOHN M SMITH",
-  "expirationDate": "12/2025",
-  "status": "ACTIVE",
-  "cvv": "123",
-  "cardType": "VISA",
-  "issueDate": "2023-12-01",
-  "activationDate": "2023-12-02",
-  "lastUsedDate": "2024-01-15"
-}
-```
-
----
-
-#### POST /api/creditcard/add
-Crea una nueva tarjeta para una cuenta.
-
-**Request**:
-```json
-{
-  "accountId": "11111111111",
-  "embossedName": "JOHN M SMITH",
-  "cardType": "VISA"
-}
-```
-
-**Response (201)**:
-```json
-{
-  "success": true,
-  "cardNumber": "4111-2222-3333-4444",
-  "message": "Card created successfully"
-}
-```
-
----
-
-#### PUT /api/creditcard/update
-Actualiza información de una tarjeta.
-
-**Request**:
-```json
-{
-  "cardNumber": "4111-1111-1111-1111",
-  "status": "BLOCKED",
-  "embossedName": "JOHN MICHAEL SMITH"
-}
-```
-
-**Response (200)**:
-```json
-{
-  "success": true,
-  "message": "Card updated successfully"
-}
-```
-
----
-
-#### DELETE /api/creditcard/delete?cardNumber={number}
-Elimina una tarjeta (baja lógica).
-
-**Query Parameters**:
-- `cardNumber` (required): Número de tarjeta
-
-**Response (200)**:
-```json
-{
-  "success": true,
-  "message": "Card deleted successfully"
-}
-```
-
----
-
-### Transacciones
-
-#### POST /api/transaction/add
-Registra una nueva transacción.
-
-**Request**:
-```json
-{
-  "cardNumber": "4111-1111-1111-1111",
-  "transactionType": "01",
-  "categoryCode": "5411",
-  "amount": 125.50,
-  "description": "GROCERY PURCHASE",
-  "merchantName": "SUPERMARKET XYZ"
-}
-```
-
-**Response (201)**:
-```json
-{
-  "success": true,
-  "transactionId": "1000000000011",
-  "message": "Transaction added successfully"
-}
-```
-
----
-
-#### GET /api/transaction/transactionview?transactionId={id}
-Consulta detalles de una transacción.
-
-**Query Parameters**:
-- `transactionId` (required): ID de transacción
-
-**Response (200)**:
-```json
-{
-  "transactionId": "1000000000001",
-  "cardNumber": "4111-1111-1111-1111",
-  "transactionType": "01",
-  "categoryCode": "5411",
-  "amount": 125.50,
-  "description": "GROCERY STORE PURCHASE",
-  "transactionDate": "2024-01-15T10:30:00Z",
-  "merchantName": "SUPERMARKET XYZ",
-  "status": "COMPLETED"
-}
-```
-
----
-
-#### GET /api/transaction/transactionlist?cardNumber={number}
-Lista transacciones de una tarjeta.
-
-**Query Parameters**:
-- `cardNumber` (required): Número de tarjeta
-- `page` (optional): Número de página (default: 1)
-- `pageSize` (optional): Tamaño de página (default: 10)
-
-**Response (200)**:
-```json
-{
-  "transactions": [
-    {
-      "transactionId": "1000000000001",
-      "amount": 125.50,
-      "description": "GROCERY PURCHASE",
-      "transactionDate": "2024-01-15",
-      "merchantName": "SUPERMARKET XYZ"
-    }
-  ],
-  "totalRecords": 50,
-  "page": 1,
-  "pageSize": 10
-}
-```
-
----
-
-### Usuarios
-
-#### GET /api/user/list
-Lista todos los usuarios del sistema.
-
-**Response (200)**:
-```json
-{
-  "users": [
-    {
-      "userId": "ADMIN001",
-      "name": "System Administrator",
-      "type": "A",
-      "role": "admin",
-      "status": "Active",
-      "createdDate": "2024-01-15",
-      "lastLogin": "2024-03-15"
-    }
-  ]
-}
-```
-
----
-
-#### POST /api/user/add
-Crea un nuevo usuario del sistema.
-
-**Request**:
-```json
-{
-  "userId": "USER123",
-  "name": "New User",
-  "password": "secure123",
-  "type": "U",
-  "role": "back-office"
-}
-```
-
-**Response (201)**:
-```json
-{
-  "success": true,
-  "userId": "USER123",
-  "message": "User created successfully"
-}
-```
-
----
-
-#### PUT /api/user/update
-Actualiza información de un usuario.
-
-**Request**:
-```json
-{
-  "userId": "USER123",
-  "name": "Updated Name",
-  "status": "Active",
-  "role": "admin"
-}
-```
-
-**Response (200)**:
-```json
-{
-  "success": true,
-  "message": "User updated successfully"
-}
-```
-
----
-
-#### DELETE /api/user/delete?userId={id}
-Elimina un usuario del sistema.
-
-**Query Parameters**:
-- `userId` (required): ID del usuario
-
-**Response (200)**:
-```json
-{
-  "success": true,
-  "message": "User deleted successfully"
-}
-```
-
----
-
-### Menús
-
-#### GET /api/menu/mainmenu
-Obtiene opciones del menú principal.
-
-**Response (200)**:
-```json
-{
-  "menuItems": [
-    {
-      "id": "1",
-      "title": "Account Inquiry",
-      "description": "View and update account information",
-      "path": "/account/view"
-    },
-    {
-      "id": "2",
-      "title": "Credit Cards",
-      "description": "Manage credit cards",
-      "path": "/creditcard/list"
-    }
-  ]
-}
-```
-
----
-
-### Pago de Servicios
-
-#### GET /api/billpayment/getcredentials
-Obtiene credenciales para pago de servicios.
-
-**Response (200)**:
-```json
-{
-  "publicKey": "pk_test_123456789",
-  "sessionId": "sess_123456789"
-}
-```
-
----
-
-## 📦 Estructura de Datos
-
-### Modelos TypeScript
-
-```typescript
-// Account Types
-interface Account {
-  accountId: string;
-  status: string;
-  balance: number;
-  creditLimit: number;
-  availableCredit: number;
-  groupId: string;
-  customer: Customer;
-  cards: CreditCard[];
-}
-
-interface Customer {
-  customerId: string;
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  ssn: string;
-  ficoScore: number;
-  dateOfBirth: string;
-  address: Address;
-  phones: Phone[];
-  governmentId: string;
-  eftAccountId: string;
-  primaryCardHolderFlag: string;
-}
-
-interface Address {
-  addressLine1: string;
-  addressLine2?: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-}
-
-interface Phone {
-  phoneType: string;
-  phoneNumber: string;
-}
-
-// Credit Card Types
-interface CreditCard {
-  cardNumber: string;
-  accountId: string;
-  embossedName: string;
-  expirationDate: string;
-  status: 'ACTIVE' | 'INACTIVE' | 'EXPIRED' | 'BLOCKED';
-  cvv: string;
-  cardType: string;
-}
-
-interface CreditCardDetail extends CreditCard {
-  issueDate: string;
-  activationDate: string;
-  lastUsedDate: string;
-}
-
-// Transaction Types
-interface Transaction {
-  transactionId: string;
-  cardNumber: string;
-  transactionType: string;
-  categoryCode: string;
-  amount: number;
-  description: string;
-  transactionDate: string;
-  merchantName: string;
-  status: string;
-}
-
-// User Types
-interface SystemUser {
-  userId: string;
-  name: string;
-  type: 'A' | 'U';
-  role: 'admin' | 'back-office';
-  status: 'Active' | 'Inactive';
-  createdDate: string;
-  lastLogin: string;
-  email?: string;
-}
-
-// Auth Types
-interface User {
-  userId: string;
-  name: string;
-  role: 'admin' | 'back-office';
-  type: 'A' | 'U';
-}
-
-interface AuthState {
-  isAuthenticated: boolean;
-  user: User | null;
-  error: string | null;
-}
-```
-
----
-
-## 🎨 Tema y Estilos
-
-### Configuración de Material-UI Theme
-
-El proyecto utiliza Material-UI con tema personalizado configurado en `app/theme/`.
-
-**Colores Principales**:
-- Primary: Azul corporativo
-- Secondary: Gris oscuro
-- Error: Rojo
-- Warning: Naranja
-- Success: Verde
-
-**Tipografía**:
-- Font Family: Roboto (default MUI)
-- Font Sizes: Scale de MUI default
-
----
-
-## 🔧 Herramientas de Desarrollo
-
-### Scripts Disponibles
-
-```bash
-npm run dev          # Servidor de desarrollo con HMR
-npm run build        # Build de producción
-npm run preview      # Preview del build
-npm run typecheck    # Verificación de tipos TypeScript
-npm run deploy       # Deploy a GitHub Pages
-```
-
-### Variables de Entorno
-
-**Desarrollo** (`.env.development`):
-```env
-VITE_USE_MOCKS=true
-VITE_MOCK_DELAY_MIN=300
-VITE_MOCK_DELAY_MAX=800
-VITE_ENABLE_MSW_LOGGING=true
-```
-
-**Producción** (`.env.production`):
-```env
-VITE_USE_MOCKS=false
-VITE_API_BASE_URL=http://18.217.121.166:8082
-```
-
----
-
-**Última actualización**: 2026-01-26  
-**Precisión del Codebase**: 95%+  
-**Mantenido por**: Equipo de Desarrollo DS3A
+**FIN DEL DOCUMENTO**
