@@ -9,7 +9,7 @@ const STORAGE_KEY = 'loginPage.language';
 const DEFAULT_LANGUAGE: LoginLanguageCode = 'es';
 
 const isSupportedLanguage = (value: string | null): value is LoginLanguageCode =>
-  value === 'es' || value === 'en';
+  value === 'es' || value === 'en' || value === 'pt';
 
 const readStoredLanguage = (fallback: LoginLanguageCode): LoginLanguageCode => {
   if (typeof window === 'undefined') {
