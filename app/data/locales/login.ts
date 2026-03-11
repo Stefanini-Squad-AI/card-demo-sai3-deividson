@@ -1,4 +1,4 @@
-export type LoginLanguageCode = 'es' | 'en';
+export type LoginLanguageCode = 'es' | 'en' | 'pt';
 
 export interface LoginTranslation {
   headerTitle: string;
@@ -93,9 +93,42 @@ export const loginTranslations: Record<LoginLanguageCode, LoginTranslation> = {
     cardBrandName: 'TuCreditoOnline',
     cardBrandTagline: 'Admin Control Panel',
   },
+  pt: {
+    headerTitle: 'CardDemo - Aplicativo de demonstração de cartões',
+    headerSubtitle: 'Modernização de mainframe',
+    docTooltip: 'Ver documentação',
+    languageLabel: 'Idioma',
+    heroPrompt: 'Digite seu ID de usuário e senha e pressione ENTER:',
+    userIdLabel: 'ID de usuário',
+    passwordLabel: 'Senha',
+    helperMaxChars: '(Máximo 8 caracteres)',
+    buttonLabel: 'ENTER = Entrar',
+    buttonLoading: 'Entrando...',
+    correctionAlert: 'Corrija os erros acima, por favor.',
+    sampleTitle: 'Credenciais de exemplo:',
+    sampleAdmin: 'Admin: ADMIN001 / PASSWORD',
+    sampleBackOffice: 'Back-Office: USER001 / PASSWORD',
+    footerText: 'ENTER = Entrar • F3 = Sair',
+    validations: {
+      userIdRequired: 'Informe seu ID de usuário.',
+      userIdMax: 'O ID de usuário deve ter no máximo 8 caracteres.',
+      passwordRequired: 'Informe sua senha.',
+      passwordMax: 'A senha deve ter no máximo 8 caracteres.',
+    },
+    backendErrors: {
+      'Invalid credentials': 'Credenciais incorretas. Tente novamente.',
+      'User not found': 'Usuário não encontrado. Verifique seu ID.',
+      'Please check your input': 'Verifique seu ID de usuário e senha.',
+      'Network error occurred': 'Não foi possível verificar. Confira sua conexão.',
+    },
+    backendErrorFallback: 'Ocorreu um erro inesperado. Tente novamente.',
+    cardBrandName: 'TuCreditoOnline',
+    cardBrandTagline: 'Painel de Administração',
+  },
 };
 
 export const loginLanguageOptions: { code: LoginLanguageCode; label: string }[] = [
   { code: 'es', label: 'Español' },
   { code: 'en', label: 'Inglés' },
+  { code: 'pt', label: 'Português' },
 ];
